@@ -1,0 +1,71 @@
+#include <soundpipe.h>
+#include <math.h>
+#include "base.h"
+#define LENGTH(x) ((int)(sizeof(x) / sizeof *(x)))
+
+int auria_init_audio(auria_data *gd, char *filename)
+{
+    sp_createn(&gd->sp, 2);
+    sp_data *sp = gd->sp;
+    gd->sp->sr = gd->sr;
+    printf("loading file %s\n", filename);
+    sp_ftbl_loadfile(sp, &gd->wav, filename);
+    sp_mincer_create(&gd->mincer);
+    sp_mincer_init(sp, gd->mincer, gd->wav);
+    sp_port_create(&gd->portX);
+    sp_port_init(sp, gd->portX, 0.05);
+    sp_port_create(&gd->portY);
+    sp_port_init(sp, gd->portY, 0.01);
+    gd->onedsr = 1.0 / sp->sr;
+    return 0;
+}
+
+int auria_destroy_audio(auria_data *gd)
+{
+    sp_data *sp = gd->sp;
+    sp_ftbl_destroy(&gd->wav);
+    sp_mincer_destroy(&gd->mincer);
+    sp_port_destroy(&gd->portX);
+    sp_port_destroy(&gd->portY);
+    sp_destroy(&sp);
+    return 0;
+}
+
+static float gen_scale(float pos) {
+    float base = sp_midi2cps(60);
+    float out = 0;
+    int scale[] = {
+        -12, -10, -8, -5, -3,
+        0, 2, 4, 7, 9, 12
+    };
+
+    out = sp_midi2cps(60 + scale[(int)round((LENGTH(scale) - 1) * pos)]) / base;
+
+    return out;
+}
+
+int auria_compute_audio(auria_data *gd)
+{
+    sp_data *sp = gd->sp;
+    SPFLOAT out = 0;
+    SPFLOAT posX = 0;
+    SPFLOAT posY = 0;
+    SPFLOAT pitch = 1;
+    SPFLOAT pitch_port = 1;
+
+    if(gd->state_Y == 1) {
+        //pitch = 2 * (1 - gd->posY);
+        pitch = gen_scale(1 - gd->posY);
+    } else {
+        pitch = 1;
+    }
+
+    sp_port_compute(sp, gd->portX, &gd->posX, &posX);
+    gd->mincer->time = posX * gd->wav->size * gd->onedsr;
+
+    sp_port_compute(sp, gd->portY, &pitch, &pitch_port);
+    gd->mincer->pitch = pitch_port;
+    sp_mincer_compute(sp, gd->mincer, NULL, &out);
+    sp->out[0] = out;
+    sp->out[1] = out;
+}
