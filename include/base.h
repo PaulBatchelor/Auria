@@ -7,6 +7,9 @@ typedef struct {
     sp_mincer *mincer;
     sp_port *portX;
     sp_port *portY;
+    sp_port *rms_smooth;
+    sp_rms *rms;
+    SPFLOAT level;
     int sr;
     int w, h;
     int state;

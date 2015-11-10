@@ -9,6 +9,7 @@
 #include <string.h>
 #endif
 #include <soundpipe.h>
+#include "math.h"
 #include "base.h"
 
 int auria_draw(auria_data *gd)
@@ -38,11 +39,34 @@ int auria_draw(auria_data *gd)
     glGetIntegerv(GL_VIEWPORT, view);
     gluUnProject(0, 0, 0.8182, model, proj, view, &fX2, &fY2, &fZ2);
 
+    glColor3f(0.5607, 0.996, 0.0353);
+
+    glBegin(GL_LINES);
+    glVertex2f(fX2 * (1 - 2 * gd->posX), fY2 );
+    glVertex2f(fX2 * (1 - 2 * gd->posX), fY1);
+    glEnd();
+    
+    /* draw y-ball*/
+    int npoints = 256;
+    float incr = 2 * M_PI / (npoints - 1);
+    float size = 0.3 * gd->level;
+    float pY;
+    if(gd->state_Y == 1) {
+        pY = 2 + fY2 * 2 * (gd->posY) + size * 0.5;
+    } else {
+        //pY = size * 0.5;
+        pY = 0;
+    }
+    float pX = fX2 * (1 - 2 * gd->posX);
+
+    glBegin(GL_TRIANGLE_FAN);
+        for(n = 0; n < npoints; n++) {
+            glVertex2f(pX + size * cos(n * incr), 
+                    pY + (size * sin(n * incr)));
+        }
+    glEnd();
 
     glColor3f(0, 0.5, 1);
-
-
-    //GLfloat pos = (fX1 * -1) / fX2;
     GLfloat pos = 0;
     float amp = 0;
     for(n = 0; n < gd->w; n++){

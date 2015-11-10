@@ -17,6 +17,11 @@ int auria_init_audio(auria_data *gd, char *filename)
     sp_port_create(&gd->portY);
     sp_port_init(sp, gd->portY, 0.01);
     gd->onedsr = 1.0 / sp->sr;
+
+    sp_port_create(&gd->rms_smooth);
+    sp_port_init(sp, gd->rms_smooth, 0.06);
+    sp_rms_create(&gd->rms);
+    sp_rms_init(sp, gd->rms);
     return 0;
 }
 
@@ -27,6 +32,8 @@ int auria_destroy_audio(auria_data *gd)
     sp_mincer_destroy(&gd->mincer);
     sp_port_destroy(&gd->portX);
     sp_port_destroy(&gd->portY);
+    sp_rms_destroy(&gd->rms);
+    sp_port_destroy(&gd->rms_smooth);
     sp_destroy(&sp);
     return 0;
 }
@@ -52,6 +59,8 @@ int auria_compute_audio(auria_data *gd)
     SPFLOAT posY = 0;
     SPFLOAT pitch = 1;
     SPFLOAT pitch_port = 1;
+    SPFLOAT rms = 0;
+    SPFLOAT rms_smooth = 0;
 
     if(gd->state_Y == 1) {
         //pitch = 2 * (1 - gd->posY);
@@ -66,6 +75,16 @@ int auria_compute_audio(auria_data *gd)
     sp_port_compute(sp, gd->portY, &pitch, &pitch_port);
     gd->mincer->pitch = pitch_port;
     sp_mincer_compute(sp, gd->mincer, NULL, &out);
+    sp_rms_compute(sp, gd->rms, &out, &rms);
+    sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
+    //gd->level = 10 * log10(gd->level);
+    //jgd->level += 60;
+    //jgd->level /= 60.0;
+
+    //if(gd->level > 1) gd->level = 1;
+    //else if(gd->level < 0) gd->level = 0;
+
+    gd->level = rms_smooth * 4;
     sp->out[0] = out;
     sp->out[1] = out;
 }
