@@ -159,6 +159,9 @@ void keyboardFunc( unsigned char key, int x, int y )
             auria_destroy(&g_data);
             exit(0);
             break;
+        case 32: /* space */
+            g_data.pause = (g_data.pause == 0) ? 1 : 0;
+            break;
         default:
             break;
     }
@@ -232,27 +235,8 @@ void mouseFunc( int button, int state, int x, int y )
     if( button == GLUT_LEFT_BUTTON ) {
         /* when left mouse button is down */
         if( state == GLUT_DOWN ) {
-            //glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-            //glMatrixMode (GL_MODELVIEW);
-            //glGetDoublev(GL_MODELVIEW_MATRIX, model);
-            //glGetDoublev(GL_PROJECTION_MATRIX, proj);
-            //glGetIntegerv(GL_VIEWPORT, view);
-            //printf("depth: %g", depth);
-            //gluUnProject(x, y, 0.8182, model, proj, view, &fX, &fY, &fZ);
-            //rad = sqrt((x*x) + (y*y));
-            //printf("x: %d, y: %d r: %g w: %d h: %d\n", x, y, rad, g_width, g_height);
-            //fY *= -1; 
-            //rad = sqrt((fX*fX) + (fY*fY));
-            //theta = atan(fY / fX);
-            //if(fX < 0 && fY < 0) theta -= M_PI;
-            //else if(fX < 0 && fY > 0) theta += M_PI;
-
-            //fprintf(stderr, "fX: %g fY: %g r: %g theta: %g\n", fX, fY, rad, theta);
-            //glMatrixMode (GL_MODELVIEW);
-            fprintf(stderr, "mouse down!\n");
             g_data.state = (g_data.state == 1) ? 0 : 1 ;
         } else {
-            fprintf(stderr, "mouse up!\n");
         }
     }
     else if ( button == GLUT_RIGHT_BUTTON )
@@ -287,7 +271,19 @@ int auria_init(auria_data *gd, char *filename)
     gd->posY = 0.5;
     gd->posX = 0;
     gd->level = 0;
+    gd->offset = 0;
+    gd->nbars = 400;
+    gd->pause = 0;
     auria_init_audio(gd, filename);
+    gd->counter = 0;
+    gd->counter_speed = (unsigned int) gd->sp->sr * 0.05;
+
+    int n;
+    unsigned int skip = gd->wav->size / gd->nbars;
+    for(n = 0; n < gd->nbars; n++) {
+        gd->soundbars[n] = gd->wav->tbl[n * skip];
+    }
+
     return 0;
 }
 

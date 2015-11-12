@@ -67,19 +67,65 @@ int auria_draw(auria_data *gd)
     glEnd();
 
     glColor3f(0, 0.5, 1);
-    GLfloat pos = 0;
+    GLfloat pos1 = 0;
+    GLfloat pos2 = 0;
     float amp = 0;
-    for(n = 0; n < gd->w; n++){
+    float w = gd->w;
+    float barwidth = w / gd->nbars;
+    unsigned int offset = gd->offset;
+    float frac = barwidth * (float)(1.0 * gd->counter / gd->counter_speed);
+
+    for(n = 0; n < gd->nbars; n++){
         /*TODO: figure out why line doesn't draw in center... */
-        pos = 2 * (1.0 * n / gd->w) - 1;
-        pos = (fX1 * pos) / fX2;
-        glBegin(GL_LINES);
-        amp = -1 * gd->wav->tbl[n * skip];
-        glVertex2f(fX2 * pos, fY2 * amp);
-        glVertex2f(fX2 * pos, fY1 * amp);
+        pos1 = 2 * ((n * barwidth) / w) - 1;
+        pos1 = (fX1 * pos1) / fX2;
+
+        pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
+        pos2 = (fX1 * pos2) / fX2;
+
+        //glBegin(GL_LINES);
+        //amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
+        //glVertex2f(fX2 * pos, fY2 * amp);
+        //glVertex2f(fX2 * pos, fY1 * amp);
+        //glEnd();
+        
+        glBegin(GL_TRIANGLE_STRIP);
+        amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
+        glVertex2f(fX2 * pos1, fY2 * amp);
+        glVertex2f(fX2 * pos1, fY1 * amp);
+        
+        glVertex2f(fX2 * pos2, fY2 * amp);
+        glVertex2f(fX2 * pos2, fY1 * amp);
         glEnd();
     }
+    
+    //for(n = 0; n < gd->nbars; n++){
+    //for(n = 0; n < gd->nbars; n++){
+    //    /*TODO: figure out why line doesn't draw in center... */
+    //    //pos = 2 * (1.0 * n / gd->w) - 1;
+    //    //pos = (fX1 * pos) / fX2;
 
+
+    //    //amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
+    //    amp = -1 * gd->soundbars[(n) % gd->nbars];
+
+    //    glBegin(GL_TRIANGLE_STRIP);
+    //    glVertex2f(fX2 * (n * barwidth), fY2 * amp);
+    //    glVertex2f(fX2 * (n * barwidth), fY1 * amp);
+    //    
+    //    glVertex2f(fX2 * ((n - 1) * barwidth), fY2 * amp);
+    //    glVertex2f(fX2 * ((n - 1) * barwidth), fY1 * amp);
+
+
+    //    glEnd();
+    //}
+
+    //glBegin(GL_TRIANGLE_STRIP);
+    //glVertex2f(-1.0f, -1.0f);
+    //glVertex2f(-1.0f, 1.0f);
+    //glVertex2f(1.0f, -1.0f);
+    //glVertex2f(1.0f, 1.0f);
+    //glEnd();
 
     glFlush( );
     glutSwapBuffers( );

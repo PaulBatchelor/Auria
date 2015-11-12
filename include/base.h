@@ -16,6 +16,12 @@ typedef struct {
     int state_Y;
     float posX, posY;
     float onedsr;
+    unsigned int offset;
+    float soundbars[400];
+    unsigned int nbars;
+    unsigned int counter;
+    unsigned int counter_speed;
+    int pause;
 }auria_data;
 
 int auria_draw(auria_data *gd);

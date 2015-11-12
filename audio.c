@@ -87,4 +87,10 @@ int auria_compute_audio(auria_data *gd)
     gd->level = rms_smooth * 4;
     sp->out[0] = out;
     sp->out[1] = out;
+    if(gd->pause == 0) {
+        if(gd->counter == 0) {
+            gd->offset = (gd->offset + 1) % gd->nbars;
+        }
+        gd->counter = (gd->counter + 1) % gd->counter_speed;
+    }
 }
