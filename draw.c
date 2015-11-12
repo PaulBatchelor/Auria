@@ -9,6 +9,7 @@
 #include <string.h>
 #endif
 #include <soundpipe.h>
+#include <sporth.h>
 #include "math.h"
 #include "base.h"
 

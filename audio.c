@@ -1,4 +1,5 @@
 #include <soundpipe.h>
+#include <sporth.h>
 #include <math.h>
 #include "base.h"
 #define LENGTH(x) ((int)(sizeof(x) / sizeof *(x)))
@@ -8,8 +9,9 @@ int auria_init_audio(auria_data *gd, char *filename)
     sp_createn(&gd->sp, 2);
     sp_data *sp = gd->sp;
     gd->sp->sr = gd->sr;
-    printf("loading file %s\n", filename);
-    sp_ftbl_loadfile(sp, &gd->wav, filename);
+    //printf("loading file %s\n", filename);
+    //sp_ftbl_loadfile(sp, &gd->wav, filename);
+    sp_ftbl_create(sp, &gd->wav, sp->sr * 10);
     sp_mincer_create(&gd->mincer);
     sp_mincer_init(sp, gd->mincer, gd->wav);
     sp_port_create(&gd->portX);
@@ -22,6 +24,29 @@ int auria_init_audio(auria_data *gd, char *filename)
     sp_port_init(sp, gd->rms_smooth, 0.06);
     sp_rms_create(&gd->rms);
     sp_rms_init(sp, gd->rms);
+
+    /* init plumber/sporth */
+    plumber_data *pd = &gd->pd;
+
+    plumber_init(pd);
+    printf("opening file %s\n", filename);
+
+    pd->fp = fopen(filename, "r");
+
+    if(pd->fp == NULL) {
+        fprintf(stderr, "There was a problem opening the file %s.\n", filename);
+        /*TODO: add better error handling */
+    }
+
+    pd->sp = sp;
+    pd->nchan = 1;
+
+    plumber_register(pd);
+
+    if(plumber_parse(pd) == PLUMBER_OK) {
+        plumber_compute(pd, PLUMBER_INIT);
+        pd->sporth.stack.pos = 0;
+    }
     return 0;
 }
 
@@ -35,6 +60,7 @@ int auria_destroy_audio(auria_data *gd)
     sp_rms_destroy(&gd->rms);
     sp_port_destroy(&gd->rms_smooth);
     sp_destroy(&sp);
+    plumber_clean(&gd->pd);
     return 0;
 }
 

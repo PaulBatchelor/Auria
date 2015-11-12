@@ -22,6 +22,8 @@ typedef struct {
     unsigned int counter;
     unsigned int counter_speed;
     int pause;
+
+    plumber_data pd;
 }auria_data;
 
 int auria_draw(auria_data *gd);

@@ -278,8 +278,16 @@ int auria_init(auria_data *gd, char *filename)
     gd->counter = 0;
     gd->counter_speed = (unsigned int) (gd->sp->sr * 12) / gd->nbars;
 
-    int n;
+    unsigned int n;
     unsigned int skip = gd->wav->size / gd->nbars;
+    SPFLOAT out = 0;
+
+    for(n = 0; n < gd->wav->size; n++) {
+        plumber_compute(&gd->pd, PLUMBER_COMPUTE);
+        out = sporth_stack_pop_float(&gd->pd.sporth.stack);
+        gd->wav->tbl[n] = out;
+    }
+
     for(n = 0; n < gd->nbars; n++) {
         gd->soundbars[n] = gd->wav->tbl[n * skip];
     }
