@@ -276,7 +276,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->pause = 0;
     auria_init_audio(gd, filename);
     gd->counter = 0;
-    gd->counter_speed = (unsigned int) gd->sp->sr * 0.05;
+    gd->counter_speed = (unsigned int) (gd->sp->sr * 12) / gd->nbars;
 
     int n;
     unsigned int skip = gd->wav->size / gd->nbars;
