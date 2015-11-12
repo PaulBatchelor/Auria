@@ -272,7 +272,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->posX = 0;
     gd->level = 0;
     gd->offset = 0;
-    gd->nbars = 400;
+    gd->nbars = 500;
     gd->pause = 0;
     auria_init_audio(gd, filename);
     gd->counter = 0;
