@@ -18,7 +18,7 @@ typedef struct {
     float posX, posY;
     float onedsr;
     unsigned int offset;
-    float soundbars[500];
+    float *soundbars;
     unsigned int nbars;
     unsigned int counter;
     unsigned int counter_speed;

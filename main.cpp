@@ -272,7 +272,8 @@ int auria_init(auria_data *gd, char *filename)
     gd->posX = 0;
     gd->level = 0;
     gd->offset = 0;
-    gd->nbars = 500;
+    gd->nbars = 100;
+	gd->soundbars = (float *)malloc(sizeof(float) * gd->nbars);
     gd->pause = 0;
     auria_init_audio(gd, filename);
     gd->counter = 0;
@@ -306,5 +307,6 @@ int auria_destroy(auria_data *gd)
 {
     stop_audio();
     auria_destroy_audio(gd);
+	free(gd->soundbars);
     return 0;
 }
