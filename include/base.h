@@ -8,6 +8,7 @@ typedef struct {
     sp_port *portX;
     sp_port *portY;
     sp_port *rms_smooth;
+    sp_port *mix;
     sp_rms *rms;
     SPFLOAT level;
     int sr;

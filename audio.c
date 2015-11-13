@@ -91,10 +91,11 @@ int auria_compute_audio(auria_data *gd)
     SPFLOAT pitch_port = 1;
     SPFLOAT rms = 0;
     SPFLOAT rms_smooth = 0;
+    SPFLOAT mix = 0;
 
     if(gd->state_Y == 1) {
-        //pitch = 2 * (1 - gd->posY);
-        pitch = gen_scale(1 - gd->posY);
+        pitch = 2 * (1 - gd->posY);
+        //pitch = gen_scale(1 - gd->posY);
     } else {
         pitch = 1;
     }
@@ -108,7 +109,7 @@ int auria_compute_audio(auria_data *gd)
     sp_rms_compute(sp, gd->rms, &mincer_out, &rms);
     sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
     gd->level = rms_smooth * 4;
-    
+   
     if(gd->pause == 0) {
         plumber_compute(&gd->pd, PLUMBER_COMPUTE);
         sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
@@ -117,6 +118,8 @@ int auria_compute_audio(auria_data *gd)
     } else {
         out = mincer_out;
     }
+
+    //out = (1 - mix) * sporth_out + mix * mincer_out;
 
     sp->out[0] = out;
     sp->out[1] = out;
