@@ -24,6 +24,7 @@ typedef struct {
     int pause;
 
     plumber_data pd;
+    unsigned int mincer_offset;
 }auria_data;
 
 int auria_draw(auria_data *gd);

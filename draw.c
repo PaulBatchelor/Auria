@@ -40,12 +40,6 @@ int auria_draw(auria_data *gd)
     glGetIntegerv(GL_VIEWPORT, view);
     gluUnProject(0, 0, 0.8182, model, proj, view, &fX2, &fY2, &fZ2);
 
-    glColor3f(0.5607, 0.996, 0.0353);
-
-    glBegin(GL_LINES);
-    glVertex2f(fX2 * (1 - 2 * gd->posX), fY2 );
-    glVertex2f(fX2 * (1 - 2 * gd->posX), fY1);
-    glEnd();
     
     /* draw y-ball*/
     int npoints = 256;
@@ -59,13 +53,22 @@ int auria_draw(auria_data *gd)
         pY = 0;
     }
     float pX = fX2 * (1 - 2 * gd->posX);
+   
+    if(gd->pause == 1) { 
+        glColor3f(0.5607, 0.996, 0.0353);
+        
+        glBegin(GL_LINES);
+        glVertex2f(fX2 * (1 - 2 * gd->posX), fY2 );
+        glVertex2f(fX2 * (1 - 2 * gd->posX), fY1);
+        glEnd();
 
-    glBegin(GL_TRIANGLE_FAN);
-        for(n = 0; n < npoints; n++) {
-            glVertex2f(pX + size * cos(n * incr), 
-                    pY + (size * sin(n * incr)));
-        }
-    glEnd();
+        glBegin(GL_TRIANGLE_FAN);
+            for(n = 0; n < npoints; n++) {
+                glVertex2f(pX + size * cos(n * incr), 
+                        pY + (size * sin(n * incr)));
+            }
+        glEnd();
+    }
 
     glColor3f(0, 0.5, 1);
     GLfloat pos1 = 0;
@@ -93,34 +96,6 @@ int auria_draw(auria_data *gd)
         glEnd();
     }
     
-    //for(n = 0; n < gd->nbars; n++){
-    //for(n = 0; n < gd->nbars; n++){
-    //    /*TODO: figure out why line doesn't draw in center... */
-    //    //pos = 2 * (1.0 * n / gd->w) - 1;
-    //    //pos = (fX1 * pos) / fX2;
-
-
-    //    //amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
-    //    amp = -1 * gd->soundbars[(n) % gd->nbars];
-
-    //    glBegin(GL_TRIANGLE_STRIP);
-    //    glVertex2f(fX2 * (n * barwidth), fY2 * amp);
-    //    glVertex2f(fX2 * (n * barwidth), fY1 * amp);
-    //    
-    //    glVertex2f(fX2 * ((n - 1) * barwidth), fY2 * amp);
-    //    glVertex2f(fX2 * ((n - 1) * barwidth), fY1 * amp);
-
-
-    //    glEnd();
-    //}
-
-    //glBegin(GL_TRIANGLE_STRIP);
-    //glVertex2f(-1.0f, -1.0f);
-    //glVertex2f(-1.0f, 1.0f);
-    //glVertex2f(1.0f, -1.0f);
-    //glVertex2f(1.0f, 1.0f);
-    //glEnd();
-
     glFlush( );
     glutSwapBuffers( );
     return 0;

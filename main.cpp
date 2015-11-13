@@ -267,7 +267,7 @@ void passiveMotionFunc(int x, int y)
 int auria_init(auria_data *gd, char *filename)
 {
     gd->sr = MY_SRATE;
-    gd->state = 0;
+    gd->state = 1;
     gd->posY = 0.5;
     gd->posX = 0;
     gd->level = 0;
@@ -276,17 +276,18 @@ int auria_init(auria_data *gd, char *filename)
     gd->pause = 0;
     auria_init_audio(gd, filename);
     gd->counter = 0;
-    gd->counter_speed = (unsigned int) (gd->sp->sr * 12) / gd->nbars;
+    gd->counter_speed = (unsigned int) gd->wav->size / gd->nbars;
+    gd->mincer_offset = 0;
 
     unsigned int n;
     unsigned int skip = gd->wav->size / gd->nbars;
     SPFLOAT out = 0;
 
-    for(n = 0; n < gd->wav->size; n++) {
-        plumber_compute(&gd->pd, PLUMBER_COMPUTE);
-        out = sporth_stack_pop_float(&gd->pd.sporth.stack);
-        gd->wav->tbl[n] = out;
-    }
+    //for(n = 0; n < gd->wav->size; n++) {
+    //    plumber_compute(&gd->pd, PLUMBER_COMPUTE);
+    //    out = sporth_stack_pop_float(&gd->pd.sporth.stack);
+    //    gd->wav->tbl[n] = out;
+    //}
 
     for(n = 0; n < gd->nbars; n++) {
         gd->soundbars[n] = gd->wav->tbl[n * skip];

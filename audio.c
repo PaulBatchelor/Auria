@@ -2,6 +2,8 @@
 #include <sporth.h>
 #include <math.h>
 #include "base.h"
+#include "mincer.h"
+
 #define LENGTH(x) ((int)(sizeof(x) / sizeof *(x)))
 
 int auria_init_audio(auria_data *gd, char *filename)
@@ -80,6 +82,8 @@ static float gen_scale(float pos) {
 int auria_compute_audio(auria_data *gd)
 {
     sp_data *sp = gd->sp;
+    SPFLOAT sporth_out = 0;
+    SPFLOAT mincer_out = 0;
     SPFLOAT out = 0;
     SPFLOAT posX = 0;
     SPFLOAT posY = 0;
@@ -100,23 +104,28 @@ int auria_compute_audio(auria_data *gd)
 
     sp_port_compute(sp, gd->portY, &pitch, &pitch_port);
     gd->mincer->pitch = pitch_port;
-    sp_mincer_compute(sp, gd->mincer, NULL, &out);
-    sp_rms_compute(sp, gd->rms, &out, &rms);
+    aure_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
+    sp_rms_compute(sp, gd->rms, &mincer_out, &rms);
     sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
-    //gd->level = 10 * log10(gd->level);
-    //jgd->level += 60;
-    //jgd->level /= 60.0;
-
-    //if(gd->level > 1) gd->level = 1;
-    //else if(gd->level < 0) gd->level = 0;
-
     gd->level = rms_smooth * 4;
+    
+    if(gd->pause == 0) {
+        plumber_compute(&gd->pd, PLUMBER_COMPUTE);
+        sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
+        gd->wav->tbl[(gd->mincer_offset + (gd->wav->size - 1)) % gd->wav->size] = sporth_out;
+        out = sporth_out;
+    } else {
+        out = mincer_out;
+    }
+
     sp->out[0] = out;
     sp->out[1] = out;
     if(gd->pause == 0) {
         if(gd->counter == 0) {
             gd->offset = (gd->offset + 1) % gd->nbars;
+            gd->soundbars[(gd->offset + (gd->nbars -1)) % gd->nbars] = out;
         }
         gd->counter = (gd->counter + 1) % gd->counter_speed;
+        gd->mincer_offset = (gd->mincer_offset + 1) % gd->wav->size;
     }
 }
