@@ -23,8 +23,8 @@ CFLAGS += -DMY_SRATE=$(SR) -g
 CXXFLAGS += -DMY_SRATE=$(SR) -g
 endif
 
-LIBS+=-Llibs -lsporth -lsoundpipe -lsndfile
-CFLAGS += -Iinclude 
+LIBS+=-Llibs -lsporth -lsoundpipe -lsndfile -L./
+CFLAGS += -Iinclude  -I ./
 CXXFLAGS += -Iinclude 
 
 OBJ=main.o RtAudio.o draw.o audio.o mincer.o
