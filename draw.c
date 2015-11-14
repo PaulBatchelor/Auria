@@ -77,13 +77,12 @@ int auria_draw(auria_data *gd)
     float w = gd->w;
     float barwidth = w / gd->nbars;
     unsigned int offset = gd->offset;
-    float frac = (float)(barwidth * gd->counter / gd->counter_speed);
-
+    float frac = ((float)gd->counter / (gd->counter_speed));
     for(n = 0; n < gd->nbars; n++){
-        pos1 = 2 * ((n * barwidth) / w) - 1;
+        pos1 = 2 * (((n - frac) * barwidth) / w) - 1;
         pos1 = (fX1 * pos1) / fX2;
 
-        pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
+        pos2 = 2 * (((n + 1 - frac) * barwidth) / w) - 1;
         pos2 = (fX1 * pos2) / fX2;
 
         glBegin(GL_TRIANGLE_STRIP);

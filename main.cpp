@@ -274,6 +274,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->offset = 0;
     gd->nbars = 500;
     gd->pause = 0;
+    gd->soundbars = (float *)malloc(sizeof(float) * gd->nbars);
     auria_init_audio(gd, filename);
     gd->counter = 0;
     gd->counter_speed = (unsigned int) gd->wav->size / gd->nbars;
@@ -293,6 +294,7 @@ int auria_init(auria_data *gd, char *filename)
         gd->soundbars[n] = gd->wav->tbl[n * skip];
     }
 
+    gd->soundbars[0] = 1;
     return 0;
 }
 
@@ -306,5 +308,6 @@ int auria_destroy(auria_data *gd)
 {
     stop_audio();
     auria_destroy_audio(gd);
+    free(gd->soundbars);
     return 0;
 }
