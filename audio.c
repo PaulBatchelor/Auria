@@ -130,5 +130,6 @@ int auria_compute_audio(auria_data *gd)
         }
         gd->counter = (gd->counter + 1) % gd->counter_speed;
         gd->mincer_offset = (gd->mincer_offset + 1) % gd->wav->size;
+		gd->screen_offset = (gd->screen_offset + 1) % gd->w;
     }
 }

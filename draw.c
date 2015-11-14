@@ -79,17 +79,20 @@ int auria_draw(auria_data *gd)
     unsigned int offset = gd->offset;
 	unsigned int counter = gd->counter;
     float frac = (float)(barwidth * gd->counter / gd->counter_speed);
-
-
+	unsigned int so = gd->screen_offset;
+	
     for(n = 0; n < gd->nbars; n++){
-        pos1 = 2 * (((n) * barwidth)/ w) - 1;
+		offset = ((n * (int)barwidth) + so) % gd->w;
+        pos1 = 2 * (offset/ w) - 1;
         pos1 = (fX1 * pos1) / fX2;
 
-        pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
+		offset = (((n + 1) * (int)barwidth) + so) % gd->w;
+        pos2 = 2 * (so / w) - 1;
         pos2 = (fX1 * pos2) / fX2;
 
         glBegin(GL_TRIANGLE_STRIP);
-        amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
+        //amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
+        amp = -1 * gd->soundbars[n];
         glVertex2f(fX2 * pos1, fY2 * amp);
         glVertex2f(fX2 * pos1, fY1 * amp);
         

@@ -22,6 +22,7 @@ typedef struct {
     unsigned int nbars;
     unsigned int counter;
     unsigned int counter_speed;
+	unsigned int screen_offset;
     int pause;
 
     plumber_data pd;
