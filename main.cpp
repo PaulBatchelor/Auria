@@ -287,7 +287,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->sr = MY_SRATE;
     gd->state = 1;
     gd->posY = 0.5;
-    gd->posX = 0;
+    gd->posX = 1;
     gd->level = 0;
     gd->offset = 0;
     gd->nbars = 500;
