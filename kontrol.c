@@ -2,6 +2,9 @@
 #include "soundpipe.h"
 #include "sporth.h"
 #include "base.h"
+
+static float joy_to_float(int val);
+
 void auria_kontrol(int type, int ctl, int val, void *ud)
 {
     //if(type == 1) {
@@ -45,13 +48,14 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
             case JOY_L_X: 
                 {
                 //printf("x: %g %d\n", (float)(val + 32767) / 65278, val);
-                if(abs(val) > 1050) {
-                    float speed = (2 * ((float)(val + 32767) / 65278) - 1);
-                    ad->accX = speed * 0.00001;
-                } else {
-                    ad->accX = 0;
-                }
-                
+                //if(abs(val) > 1050) {
+                //    float speed = (2 * ((float)(val + 32767) / 65278) - 1);
+                //    /*TODO make this constant based on samplerate */
+                //    ad->accX = speed * 0.00001;
+                //} else {
+                //    ad->accX = 0;
+                //}
+                ad->accX = joy_to_float(val);
                 break;
                 }
             default: break;
@@ -75,5 +79,16 @@ int auria_switch(auria_data *ad)
         ad->mode = AURIA_PLEASE_REPLAY;
         ad->cf.pos = 0;
         //g_data.wtpos = g_data.mincer->wtpos;
+    }
+}
+
+static float joy_to_float(int val) 
+{
+    if(abs(val) > 1050) {
+        float speed = (2 * ((float)(val + 32767) / 65278) - 1);
+        /*TODO make this constant based on samplerate */
+        return speed * 0.00001;
+    } else {
+        return 0;
     }
 }

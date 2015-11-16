@@ -53,6 +53,7 @@ typedef struct {
 
     /* joystick acceleration */
     float accX;
+    float accY;
 
     /* Flag to Use portamento time. Should almost always be on.*/
     int use_port;
