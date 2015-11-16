@@ -31,6 +31,7 @@ typedef struct {
     float onedsr;
     unsigned int offset;
     float *soundbars;
+    float sum;
     unsigned int nbars;
     unsigned int counter;
     unsigned int counter_speed;
@@ -39,9 +40,6 @@ typedef struct {
     plumber_data pd;
     unsigned int mincer_offset;
     unsigned int wtpos;
-
-    /* for debugging, delete later */
-    uint32_t last;
 }auria_data;
 
 int auria_draw(auria_data *gd);

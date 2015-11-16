@@ -127,23 +127,23 @@ int auria_compute_audio(auria_data *gd)
             printf("wave position is %d wave size is %d\n", gd->wtpos, gd->wav->size);
         } 
         unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
-        //printf("%d %d\n", t, gd->last);
-        gd->last = t;
         out = gd->wav->tbl[t];
         gd->posX = (float)(gd->wtpos) / gd->wav->size;
         gd->wtpos++; 
 
     }
 
+
     if(mode == AURIA_SCROLL) {
+        gd->sum += fabs(out); 
         if(gd->counter == 0) {
             gd->offset = (gd->offset + 1) % gd->nbars;
-            gd->soundbars[(gd->offset + (gd->nbars -1)) % gd->nbars] = out;
+            gd->soundbars[(gd->offset + (gd->nbars -1)) % gd->nbars] = (float) gd->sum / gd->counter_speed;
+            gd->sum = 0;
         }
         gd->counter = (gd->counter + 1) % gd->counter_speed;
         gd->mincer_offset = (gd->mincer_offset + 1) % gd->wav->size;
     }
-   
     sp->out[0] = out;
     sp->out[1] = out;
 }
