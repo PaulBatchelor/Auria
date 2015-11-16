@@ -18,14 +18,15 @@ endif
 
 SR=44100
 
+
 ifdef SR
 CFLAGS += -DMY_SRATE=$(SR) -g
 CXXFLAGS += -DMY_SRATE=$(SR) -g
 endif
 
 LIBS+=-Llibs -lsporth -lsoundpipe -lsndfile -L./
-CFLAGS += -Iinclude  -I ./
-CXXFLAGS += -Iinclude 
+CFLAGS += -Iinclude  -I ./ -DUSE_F310=1
+CXXFLAGS += -Iinclude -DUSE_F310=1
 
 OBJ=main.o RtAudio.o draw.o audio.o mincer.o f310.o kontrol.o
 

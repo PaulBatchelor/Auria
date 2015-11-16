@@ -314,8 +314,12 @@ int auria_init(auria_data *gd, char *filename)
 
     gd->cf.pos = 0;
     gd->cf.time = 0.1 * gd->sp->sr;
-    
+
+#ifdef USE_F310    
     f310_start(&gd->fd, auria_kontrol, gd);
+#endif
+
+    gd->accX = 0;
     return 0;
 }
 

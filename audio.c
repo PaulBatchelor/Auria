@@ -104,6 +104,11 @@ int auria_compute_audio(auria_data *gd)
         pitch = 1;
     }
 
+    gd->posX = gd->posX + gd->accX;
+
+    if(gd->posX > 1) gd->posX = 1;
+    else if(gd->posX < 0) gd->posX = 0;
+
     sp_port_compute(sp, gd->portX, &gd->posX, &posX);
     gd->mincer->time = posX * gd->wav->size * gd->onedsr;
 

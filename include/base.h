@@ -50,6 +50,9 @@ typedef struct {
     crossfade cf;
 
     f310_d fd;
+
+    /* joystick acceleration */
+    float accX;
 }auria_data;
 
 int auria_draw(auria_data *gd);
