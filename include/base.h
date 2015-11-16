@@ -74,6 +74,7 @@ float auria_cf(crossfade *cf, float v1, float v2);
 int auria_cf_check(crossfade *cf);
 void auria_kontrol(int type, int ctl, int val, void *ud);
 int auria_switch(auria_data *ad);
+int auria_toggle_pitch(auria_data *ad);
 #ifdef __cplusplus
 }
 #endif

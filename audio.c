@@ -106,10 +106,15 @@ int auria_compute_audio(auria_data *gd)
     }
 
     gd->posX = gd->posX + gd->accX;
+    gd->posY = gd->posY + gd->accY;
 
-    if(gd->posX > 1) gd->posX = 1;
+    /*TODO: refactor */
+    if(gd->posX > 0.99) gd->posX = 0.99;
     else if(gd->posX < 0) gd->posX = 0;
-    
+
+    if(gd->posY > 1) gd->posY = 1;
+    else if(gd->posY < 0) gd->posY = 0;
+
     sp_port_compute(sp, gd->portX, &gd->posX, &posX);
 
     gd->mincer->time = posX * gd->wav->size * gd->onedsr;
@@ -127,8 +132,21 @@ int auria_compute_audio(auria_data *gd)
     if(mode == AURIA_SCROLL) {
         plumber_compute(&gd->pd, PLUMBER_COMPUTE);
         sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
-        gd->wav->tbl[(gd->mincer_offset + gd->wav->size) % gd->wav->size] = sporth_out;
-        out = sporth_out;
+/* the following ungodly lines of code will delay the incoming sporth input by 
+ * the crossfade time (in samples). This is done to ensure a smooth crossfade.
+ *
+ * cf.time = crossfade time (in samples)
+ * mincer_offset = ftable offset position (because of scrolling)
+ * wave->size = ftable wave size
+ *
+ * TODO: refactor so this block comment describes a single function, not a block 
+ * of code in a conditional. 
+ *
+ */
+        gd->wav->tbl[(gd->mincer_offset + gd->wav->size + gd->cf.time) % gd->wav->size] 
+            = sporth_out;
+        out = gd->wav->tbl[(gd->mincer_offset + gd->wav->size) % gd->wav->size];
+        //out = sporth_out;
     } else if(mode == AURIA_FREEZE) {
         //out = mincer_out;
         out = auria_cf(&gd->cf, wt_out, mincer_out);

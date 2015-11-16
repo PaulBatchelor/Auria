@@ -251,7 +251,8 @@ void mouseFunc( int button, int state, int x, int y )
     if( button == GLUT_LEFT_BUTTON ) {
         /* when left mouse button is down */
         if( state == GLUT_DOWN ) {
-            g_data.state = (g_data.state == 1) ? 0 : 1 ;
+            //g_data.state = (g_data.state == 1) ? 0 : 1 ;
+            auria_toggle_pitch(&g_data);
         } else {
         }
     }
@@ -324,6 +325,7 @@ int auria_init(auria_data *gd, char *filename)
 #endif
 
     gd->accX = 0;
+    gd->accY = 0;
     return 0;
 }
 

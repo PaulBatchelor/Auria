@@ -41,23 +41,20 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 printf("but_a %d\n", val); 
                 auria_switch(ad);
                 break;
+            case BUT_B: 
+                printf("but_b %d\n", val); 
+                if(val == 1) auria_toggle_pitch(ad);
+                break;
             default: break;
         }
     } else if(type == 2) {
         switch(ctl) {
             case JOY_L_X: 
-                {
-                //printf("x: %g %d\n", (float)(val + 32767) / 65278, val);
-                //if(abs(val) > 1050) {
-                //    float speed = (2 * ((float)(val + 32767) / 65278) - 1);
-                //    /*TODO make this constant based on samplerate */
-                //    ad->accX = speed * 0.00001;
-                //} else {
-                //    ad->accX = 0;
-                //}
                 ad->accX = joy_to_float(val);
                 break;
-                }
+            case JOY_L_Y: 
+                ad->accY = joy_to_float(val);
+                break;
             default: break;
         }
 
@@ -71,15 +68,23 @@ int auria_switch(auria_data *ad)
     } else if (ad->mode == AURIA_SCROLL) {
         ad->mode = AURIA_PLEASE_FREEZE;
         ad->cf.pos = 0;
-        /* possible way to fix clicking */
+        /* TODO: add buffering to sporth signal, so crossfade behaves the same */
+
+        /* temporary way to mask some clicking. */
         if(ad->posX == 1) {
-         ad->posX = (float)(ad->wav->size - 1.5 * ad->cf.time) / ad->wav->size;
+             ad->posX = (float)(ad->wav->size - 1.5 * ad->cf.time) / ad->wav->size;
         }
     } else if(ad->mode == AURIA_FREEZE) {
         ad->mode = AURIA_PLEASE_REPLAY;
         ad->cf.pos = 0;
         //g_data.wtpos = g_data.mincer->wtpos;
     }
+}
+
+int auria_toggle_pitch(auria_data *ad) {
+    ad->state_Y = (ad->state_Y == 1) ? 0 : 1 ;
+    ad->posY = 0.5;
+    return 0;
 }
 
 static float joy_to_float(int val) 
