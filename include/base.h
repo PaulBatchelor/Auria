@@ -39,6 +39,9 @@ typedef struct {
     plumber_data pd;
     unsigned int mincer_offset;
     unsigned int wtpos;
+
+    /* for debugging, delete later */
+    uint32_t last;
 }auria_data;
 
 int auria_draw(auria_data *gd);

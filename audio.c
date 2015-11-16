@@ -83,7 +83,7 @@ int auria_compute_audio(auria_data *gd)
     sp_data *sp = gd->sp;
     SPFLOAT sporth_out = 0;
     SPFLOAT mincer_out = 0;
-    SPFLOAT out = 0;
+    SPFLOAT out = 4;
     SPFLOAT posX = 0;
     SPFLOAT posY = 0;
     SPFLOAT pitch = 1;
@@ -117,20 +117,21 @@ int auria_compute_audio(auria_data *gd)
     if(mode == AURIA_SCROLL) {
         plumber_compute(&gd->pd, PLUMBER_COMPUTE);
         sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
-        gd->wav->tbl[(gd->mincer_offset + (gd->wav->size - 1)) % gd->wav->size] = sporth_out;
+        gd->wav->tbl[(gd->mincer_offset + gd->wav->size) % gd->wav->size] = sporth_out;
         out = sporth_out;
     } else if(mode == AURIA_FREEZE) {
         out = mincer_out;
     } else if (mode == AURIA_REPLAY) {
-        if( gd->wtpos >= (gd->wav->size - 1)) {
+        if( gd->wtpos + 1 > gd->wav->size) {
             gd->mode = AURIA_SCROLL;
             printf("wave position is %d wave size is %d\n", gd->wtpos, gd->wav->size);
-        } else {
-            gd->wtpos++; 
-        }
-        unsigned int t = ((gd->wtpos - 1 + gd->mincer_offset) % gd->wav->size);
+        } 
+        unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
+        //printf("%d %d\n", t, gd->last);
+        gd->last = t;
         out = gd->wav->tbl[t];
-        gd->posX = (float)(gd->wtpos - 1) / gd->wav->size;
+        gd->posX = (float)(gd->wtpos) / gd->wav->size;
+        gd->wtpos++; 
 
     }
 

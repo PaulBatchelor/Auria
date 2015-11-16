@@ -292,6 +292,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->counter_speed = (unsigned int) gd->wav->size / gd->nbars;
     gd->mincer_offset = 0;
     gd->wtpos = 0;
+    gd->last = 0;
 
     unsigned int n;
     unsigned int skip = gd->wav->size / gd->nbars;
