@@ -1,6 +1,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+enum {
+    AURIA_SCROLL,
+    AURIA_FREEZE,
+    AURIA_REPLAY
+};
+
 typedef struct {
     sp_data *sp;
     sp_ftbl *wav;
@@ -22,10 +29,11 @@ typedef struct {
     unsigned int nbars;
     unsigned int counter;
     unsigned int counter_speed;
-    int pause;
+    int mode;
 
     plumber_data pd;
     unsigned int mincer_offset;
+    unsigned int wtpos;
 }auria_data;
 
 int auria_draw(auria_data *gd);

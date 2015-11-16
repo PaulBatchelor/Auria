@@ -160,7 +160,16 @@ void keyboardFunc( unsigned char key, int x, int y )
             exit(0);
             break;
         case 32: /* space */
-            g_data.pause = (g_data.pause == 0) ? 1 : 0;
+            //g_data.pause = (g_data.pause == 0) ? 1 : 0;
+            //g_data.mode = (g_data.mode == AURIA_FREEZE) ? 
+            //    AURIA_SCROLL : AURIA_FREEZE;
+
+            if(g_data.mode == AURIA_SCROLL) {
+                g_data.mode = AURIA_FREEZE;
+            } else if(g_data.mode == AURIA_FREEZE) {
+                g_data.mode = AURIA_SCROLL;
+            }
+
             break;
         default:
             break;
@@ -255,12 +264,14 @@ void mouseFunc( int button, int state, int x, int y )
 }
 void passiveMotionFunc(int x, int y)
 {
-    if(g_data.state == 1) {
-        g_data.posX = 1.0 * x / g_data.w;
-    }
-    
-    if(g_data.state_Y == 1) {
-        g_data.posY = 1.0 * y / g_data.h;
+    if(g_data.mode == AURIA_FREEZE) {
+        if(g_data.state == 1) {
+            g_data.posX = 1.0 * x / g_data.w;
+        }
+        
+        if(g_data.state_Y == 1) {
+            g_data.posY = 1.0 * y / g_data.h;
+        }
     }
 }
 
@@ -273,12 +284,13 @@ int auria_init(auria_data *gd, char *filename)
     gd->level = 0;
     gd->offset = 0;
     gd->nbars = 500;
-    gd->pause = 0;
+    gd->mode = AURIA_SCROLL;
     gd->soundbars = (float *)malloc(sizeof(float) * gd->nbars);
     auria_init_audio(gd, filename);
     gd->counter = 0;
     gd->counter_speed = (unsigned int) gd->wav->size / gd->nbars;
     gd->mincer_offset = 0;
+    gd->wtpos = 0;
 
     unsigned int n;
     unsigned int skip = gd->wav->size / gd->nbars;

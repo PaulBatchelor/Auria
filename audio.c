@@ -1,8 +1,8 @@
 #include <soundpipe.h>
 #include <sporth.h>
 #include <math.h>
-#include "base.h"
 #include "mincer.h"
+#include "base.h"
 
 #define LENGTH(x) ((int)(sizeof(x) / sizeof *(x)))
 
@@ -110,12 +110,12 @@ int auria_compute_audio(auria_data *gd)
     sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
     gd->level = rms_smooth * 4;
    
-    if(gd->pause == 0) {
+    if(gd->mode == AURIA_SCROLL) {
         plumber_compute(&gd->pd, PLUMBER_COMPUTE);
         sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
         gd->wav->tbl[(gd->mincer_offset + (gd->wav->size - 1)) % gd->wav->size] = sporth_out;
         out = sporth_out;
-    } else {
+    } else if(gd->mode == AURIA_FREEZE) {
         out = mincer_out;
     }
 
@@ -123,7 +123,8 @@ int auria_compute_audio(auria_data *gd)
 
     sp->out[0] = out;
     sp->out[1] = out;
-    if(gd->pause == 0) {
+    //if(gd->pause == 0) {
+    if(gd->mode == AURIA_SCROLL) {
         if(gd->counter == 0) {
             gd->offset = (gd->offset + 1) % gd->nbars;
             gd->soundbars[(gd->offset + (gd->nbars -1)) % gd->nbars] = out;
