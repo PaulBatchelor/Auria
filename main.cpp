@@ -314,6 +314,8 @@ int auria_init(auria_data *gd, char *filename)
 
     gd->cf.pos = 0;
     gd->cf.time = 0.1 * gd->sp->sr;
+    
+    f310_start(&gd->fd, auria_kontrol, gd);
     return 0;
 }
 
@@ -327,6 +329,7 @@ int auria_destroy(auria_data *gd)
 {
     stop_audio();
     auria_destroy_audio(gd);
+    f310_stop(&gd->fd);
     free(gd->soundbars);
     return 0;
 }

@@ -27,7 +27,7 @@ LIBS+=-Llibs -lsporth -lsoundpipe -lsndfile -L./
 CFLAGS += -Iinclude  -I ./
 CXXFLAGS += -Iinclude 
 
-OBJ=main.o RtAudio.o draw.o audio.o mincer.o
+OBJ=main.o RtAudio.o draw.o audio.o mincer.o f310.o kontrol.o
 
 default: auria
 

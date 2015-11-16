@@ -5,6 +5,8 @@ extern "C" {
 #include "mincer.h"
 #define AURIA_MINCER 1
 #endif
+
+#include "f310.h"
 enum {
     AURIA_SCROLL,
     AURIA_FREEZE,
@@ -46,6 +48,8 @@ typedef struct {
     unsigned int mincer_offset;
     unsigned int wtpos;
     crossfade cf;
+
+    f310_d fd;
 }auria_data;
 
 int auria_draw(auria_data *gd);
@@ -60,6 +64,7 @@ int auria_destroy(auria_data *gd);
 int auria_destroy_audio(auria_data *gd);
 
 float auria_cf(crossfade *cf, float v1, float v2);
+void auria_kontrol(int type, int ctl, int val, void *ud);
 #ifdef __cplusplus
 }
 #endif
