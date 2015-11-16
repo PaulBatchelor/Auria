@@ -147,3 +147,9 @@ int auria_compute_audio(auria_data *gd)
     sp->out[0] = out;
     sp->out[1] = out;
 }
+
+float auria_cf(crossfade *cf, float v1, float v2)
+{
+    /* crossfade from v1 to v2 */
+    return v2;
+}

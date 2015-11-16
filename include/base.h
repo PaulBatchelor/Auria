@@ -13,6 +13,11 @@ enum {
     AURIA_PLEASE_REPLAY
 };
 
+typedef struct  {
+    unsigned int time;
+    unsigned int pos;
+} crossfade;
+
 typedef struct {
     sp_data *sp;
     sp_ftbl *wav;
@@ -40,6 +45,7 @@ typedef struct {
     plumber_data pd;
     unsigned int mincer_offset;
     unsigned int wtpos;
+    crossfade cf;
 }auria_data;
 
 int auria_draw(auria_data *gd);
@@ -52,6 +58,8 @@ int auria_compute_audio(auria_data *gd);
 /* Destroyers */
 int auria_destroy(auria_data *gd);
 int auria_destroy_audio(auria_data *gd);
+
+float auria_cf(crossfade *cf, float v1, float v2);
 #ifdef __cplusplus
 }
 #endif

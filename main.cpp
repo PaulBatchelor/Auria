@@ -309,6 +309,11 @@ int auria_init(auria_data *gd, char *filename)
     }
 
     gd->soundbars[0] = 1;
+
+    /* init crossfade TODO: refactor */
+
+    gd->cf.pos = 0;
+    gd->cf.time = 0.1 * gd->sp->sr;
     return 0;
 }
 
