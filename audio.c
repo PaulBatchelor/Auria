@@ -92,7 +92,10 @@ int auria_compute_audio(auria_data *gd)
     SPFLOAT rms_smooth = 0;
     SPFLOAT mix = 0;
     if(gd->mode == AURIA_PLEASE_FREEZE) gd->mode = AURIA_FREEZE;
-    if(gd->mode == AURIA_PLEASE_REPLAY) gd->mode = AURIA_REPLAY;
+    if(gd->mode == AURIA_PLEASE_REPLAY) {
+        gd->mode = AURIA_REPLAY;
+        gd->wtpos = gd->mincer->wtpos - 1;
+    }
     int mode = gd->mode;
     if(gd->state_Y == 1) {
         pitch = 2 * (1 - gd->posY);
@@ -119,18 +122,18 @@ int auria_compute_audio(auria_data *gd)
     } else if(mode == AURIA_FREEZE) {
         out = mincer_out;
     } else if (mode == AURIA_REPLAY) {
-        if((gd->wtpos)> gd->wav->size && (mode == AURIA_REPLAY)) {
+        if( gd->wtpos >= (gd->wav->size - 1)) {
             gd->mode = AURIA_SCROLL;
-            //mode = AURIA_SCROLL;
+            printf("wave position is %d wave size is %d\n", gd->wtpos, gd->wav->size);
+        } else {
+            gd->wtpos++; 
         }
-        out = gd->wav->tbl[(gd->wtpos + gd->mincer_offset) % gd->wav->size];
-        gd->posX = (float)gd->wtpos / gd->wav->size;
-        gd->wtpos++; 
+        unsigned int t = ((gd->wtpos - 1 + gd->mincer_offset) % gd->wav->size);
+        out = gd->wav->tbl[t];
+        gd->posX = (float)(gd->wtpos - 1) / gd->wav->size;
 
     }
-    
-    sp->out[0] = out;
-    sp->out[1] = out;
+
     if(mode == AURIA_SCROLL) {
         if(gd->counter == 0) {
             gd->offset = (gd->offset + 1) % gd->nbars;
@@ -139,4 +142,7 @@ int auria_compute_audio(auria_data *gd)
         gd->counter = (gd->counter + 1) % gd->counter_speed;
         gd->mincer_offset = (gd->mincer_offset + 1) % gd->wav->size;
     }
+   
+    sp->out[0] = out;
+    sp->out[1] = out;
 }
