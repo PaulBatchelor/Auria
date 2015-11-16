@@ -164,12 +164,18 @@ void keyboardFunc( unsigned char key, int x, int y )
             //g_data.mode = (g_data.mode == AURIA_FREEZE) ? 
             //    AURIA_SCROLL : AURIA_FREEZE;
 
-            if(g_data.mode == AURIA_SCROLL || g_data.mode == AURIA_REPLAY) {
-                g_data.mode = AURIA_PLEASE_FREEZE;
-            } else if(g_data.mode == AURIA_FREEZE) {
-                g_data.mode = AURIA_PLEASE_REPLAY;
-                //g_data.wtpos = g_data.mincer->wtpos;
-            }
+            //if(g_data.mode == AURIA_SCROLL || g_data.mode == AURIA_REPLAY) {
+            //    g_data.mode = AURIA_PLEASE_FREEZE;
+            //    /* turn on crossfade by setting position to 0*/
+            //    g_data.cf.pos = 0; 
+            //} else if(g_data.mode == AURIA_FREEZE) {
+            //    g_data.mode = AURIA_PLEASE_REPLAY;
+            //    /* turn on crossfade by setting position to 0*/
+            //    g_data.cf.pos = 0; 
+            //    //g_data.wtpos = g_data.mincer->wtpos;
+            //}
+
+            auria_switch(&g_data);
 
             break;
         default:
@@ -254,8 +260,7 @@ void mouseFunc( int button, int state, int x, int y )
         /* when right mouse button down */
         if( state == GLUT_DOWN ) {
             g_data.state_Y = (g_data.state_Y == 1) ? 0 : 1 ;
-        }
-        else {
+        } else {
         }
     }
     else {
@@ -312,9 +317,8 @@ int auria_init(auria_data *gd, char *filename)
 
     /* init crossfade TODO: refactor */
 
-    gd->cf.pos = 0;
-    gd->cf.time = 0.1 * gd->sp->sr;
-
+    gd->cf.pos = 1;
+    gd->cf.time =  0.05 * gd->sp->sr;
 #ifdef USE_F310    
     f310_start(&gd->fd, auria_kontrol, gd);
 #endif

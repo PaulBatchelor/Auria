@@ -53,6 +53,9 @@ typedef struct {
 
     /* joystick acceleration */
     float accX;
+
+    /* Flag to Use portamento time. Should almost always be on.*/
+    int use_port;
 }auria_data;
 
 int auria_draw(auria_data *gd);
@@ -67,7 +70,9 @@ int auria_destroy(auria_data *gd);
 int auria_destroy_audio(auria_data *gd);
 
 float auria_cf(crossfade *cf, float v1, float v2);
+int auria_cf_check(crossfade *cf);
 void auria_kontrol(int type, int ctl, int val, void *ud);
+int auria_switch(auria_data *ad);
 #ifdef __cplusplus
 }
 #endif

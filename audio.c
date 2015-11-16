@@ -83,6 +83,7 @@ int auria_compute_audio(auria_data *gd)
     sp_data *sp = gd->sp;
     SPFLOAT sporth_out = 0;
     SPFLOAT mincer_out = 0;
+    SPFLOAT wt_out = 0;
     SPFLOAT out = 4;
     SPFLOAT posX = 0;
     SPFLOAT posY = 0;
@@ -108,8 +109,9 @@ int auria_compute_audio(auria_data *gd)
 
     if(gd->posX > 1) gd->posX = 1;
     else if(gd->posX < 0) gd->posX = 0;
-
+    
     sp_port_compute(sp, gd->portX, &gd->posX, &posX);
+
     gd->mincer->time = posX * gd->wav->size * gd->onedsr;
 
     sp_port_compute(sp, gd->portY, &pitch, &pitch_port);
@@ -118,21 +120,29 @@ int auria_compute_audio(auria_data *gd)
     sp_rms_compute(sp, gd->rms, &mincer_out, &rms);
     sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
     gd->level = rms_smooth * 4;
-        
+    
+    unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
+    wt_out = gd->wav->tbl[t];
+
     if(mode == AURIA_SCROLL) {
         plumber_compute(&gd->pd, PLUMBER_COMPUTE);
         sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
         gd->wav->tbl[(gd->mincer_offset + gd->wav->size) % gd->wav->size] = sporth_out;
         out = sporth_out;
     } else if(mode == AURIA_FREEZE) {
-        out = mincer_out;
+        //out = mincer_out;
+        out = auria_cf(&gd->cf, wt_out, mincer_out);
+        if(auria_cf_check(&gd->cf)) {
+            gd->wtpos++;
+        }
     } else if (mode == AURIA_REPLAY) {
         if( gd->wtpos + 1 > gd->wav->size) {
             gd->mode = AURIA_SCROLL;
             printf("wave position is %d wave size is %d\n", gd->wtpos, gd->wav->size);
         } 
-        unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
-        out = gd->wav->tbl[t];
+        //unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
+        //out = auria_cf(&gd->cf, mincer_out, gd->wav->tbl[t]);
+        out = auria_cf(&gd->cf, mincer_out, wt_out);
         gd->posX = (float)(gd->wtpos) / gd->wav->size;
         gd->wtpos++; 
 
@@ -156,5 +166,15 @@ int auria_compute_audio(auria_data *gd)
 float auria_cf(crossfade *cf, float v1, float v2)
 {
     /* crossfade from v1 to v2 */
-    return v2;
+    float out = v2;
+    if(cf->pos < cf->time) {
+        float fade = (float)cf->pos / cf->time;
+        out = (fade * v2) + ((1 - fade) * v1);
+        cf->pos++;
+    }
+    return out;
+}
+int auria_cf_check(crossfade *cf)
+{
+    return cf->pos < cf->time;
 }
