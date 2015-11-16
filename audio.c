@@ -1,7 +1,6 @@
 #include <soundpipe.h>
 #include <sporth.h>
 #include <math.h>
-#include "mincer.h"
 #include "base.h"
 
 #define LENGTH(x) ((int)(sizeof(x) / sizeof *(x)))
@@ -14,8 +13,8 @@ int auria_init_audio(auria_data *gd, char *filename)
     //printf("loading file %s\n", filename);
     //sp_ftbl_loadfile(sp, &gd->wav, filename);
     sp_ftbl_create(sp, &gd->wav, sp->sr * 10);
-    sp_mincer_create(&gd->mincer);
-    sp_mincer_init(sp, gd->mincer, gd->wav);
+    auria_mincer_create(&gd->mincer);
+    auria_mincer_init(sp, gd->mincer, gd->wav);
     sp_port_create(&gd->portX);
     sp_port_init(sp, gd->portX, 0.05);
     sp_port_create(&gd->portY);
@@ -56,7 +55,7 @@ int auria_destroy_audio(auria_data *gd)
 {
     sp_data *sp = gd->sp;
     sp_ftbl_destroy(&gd->wav);
-    sp_mincer_destroy(&gd->mincer);
+    auria_mincer_destroy(&gd->mincer);
     sp_port_destroy(&gd->portX);
     sp_port_destroy(&gd->portY);
     sp_rms_destroy(&gd->rms);
@@ -105,7 +104,7 @@ int auria_compute_audio(auria_data *gd)
 
     sp_port_compute(sp, gd->portY, &pitch, &pitch_port);
     gd->mincer->pitch = pitch_port;
-    aure_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
+    auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
     sp_rms_compute(sp, gd->rms, &mincer_out, &rms);
     sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
     gd->level = rms_smooth * 4;
@@ -117,6 +116,14 @@ int auria_compute_audio(auria_data *gd)
         out = sporth_out;
     } else if(gd->mode == AURIA_FREEZE) {
         out = mincer_out;
+    } else if (gd->mode == AURIA_REPLAY) {
+        gd->wtpos++; 
+        if(gd->wtpos < gd->wav->size) {
+            out = gd->wav->tbl[(gd->wtpos + gd->mincer_offset) % gd->wav->size];
+            gd->posX = (float)gd->wtpos / gd->wav->size;
+        } else {
+            gd->mode = AURIA_SCROLL;
+        }
     }
 
     //out = (1 - mix) * sporth_out + mix * mincer_out;

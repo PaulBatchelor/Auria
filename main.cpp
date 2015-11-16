@@ -164,10 +164,11 @@ void keyboardFunc( unsigned char key, int x, int y )
             //g_data.mode = (g_data.mode == AURIA_FREEZE) ? 
             //    AURIA_SCROLL : AURIA_FREEZE;
 
-            if(g_data.mode == AURIA_SCROLL) {
+            if(g_data.mode == AURIA_SCROLL || g_data.mode == AURIA_REPLAY) {
                 g_data.mode = AURIA_FREEZE;
             } else if(g_data.mode == AURIA_FREEZE) {
-                g_data.mode = AURIA_SCROLL;
+                g_data.mode = AURIA_REPLAY;
+                g_data.wtpos = g_data.mincer->wtpos;
             }
 
             break;

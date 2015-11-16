@@ -1,7 +1,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#ifndef AURIA_MINCER
+#include "mincer.h"
+#define AURIA_MINCER 1
+#endif
 enum {
     AURIA_SCROLL,
     AURIA_FREEZE,
@@ -11,7 +14,7 @@ enum {
 typedef struct {
     sp_data *sp;
     sp_ftbl *wav;
-    sp_mincer *mincer;
+    auria_mincer *mincer;
     sp_port *portX;
     sp_port *portY;
     sp_port *rms_smooth;

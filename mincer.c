@@ -17,8 +17,82 @@
 #define M_PI 3.14159265358979323846	
 #endif
 #include "soundpipe.h"
+#include "mincer.h"
 
-int aure_mincer_compute(sp_data *sp, sp_mincer *p, SPFLOAT *in2, SPFLOAT *out, uint32_t offset)
+int auria_mincer_create(auria_mincer **p)
+{
+    *p = malloc(sizeof(auria_mincer));
+    return SP_OK;
+}
+
+int auria_mincer_destroy(auria_mincer **p)
+{
+    auria_mincer *pp = *p;
+    sp_fft_destroy(&pp->fft);
+    sp_auxdata_free(&pp->fwin);
+    sp_auxdata_free(&pp->bwin);
+    sp_auxdata_free(&pp->prev);
+    sp_auxdata_free(&pp->framecount);
+    sp_auxdata_free(&pp->outframe);
+    sp_auxdata_free(&pp->win);
+    free(*p);
+    return SP_OK;
+}
+
+int auria_mincer_init(sp_data *sp, auria_mincer *p, sp_ftbl *ft)
+{
+    p->ft = ft;
+    p->idecim = 4;
+    p->iN = 2048;
+    p->lock = 1;
+    p->pitch = 1;
+    p->amp = 1;
+    p->time = 0;
+    int N =  p->iN, ui;
+    unsigned int size;
+    int decim = p->idecim;
+
+    /* 2^11 = 2048, the default fftsize, will probably not change */
+    sp_fft_init(&p->fft, 11);
+
+    if (decim == 0) decim = 4;
+
+    p->hsize = N/decim;
+    p->cnt = p->hsize;
+    p->curframe = 0;
+    p->pos = 0;
+    p->wtpos = 0;
+
+    size = (N+2)*sizeof(SPFLOAT);
+    sp_auxdata_alloc(&p->fwin, size);
+    sp_auxdata_alloc(&p->bwin, size);
+    sp_auxdata_alloc(&p->prev, size);
+    size = decim*sizeof(int);
+    sp_auxdata_alloc(&p->framecount, size);
+    {
+      int k=0;
+        for (k=0; k < decim; k++) {
+            ((int *)(p->framecount.ptr))[k] = k*N;
+        }
+    }
+    size = decim*sizeof(SPFLOAT)*N;
+    sp_auxdata_alloc(&p->outframe, size);
+    
+    size = N*sizeof(SPFLOAT);
+    sp_auxdata_alloc(&p->win, size);
+    {
+        SPFLOAT x = 2.0 * M_PI/N;
+        for (ui=0; ui < N; ui++)
+        ((SPFLOAT *)p->win.ptr)[ui] = 0.5 - 0.5 * cos((SPFLOAT)ui*x);
+    }
+
+    p->N = N;
+    p->decim = decim;
+
+    return SP_OK;
+}
+
+int auria_mincer_compute(sp_data *sp, auria_mincer *p, SPFLOAT *in2, SPFLOAT *out, uint32_t offset)
 {
     SPFLOAT pitch = p->pitch, time = p->time, lock = p->lock, amp =p->amp;
     SPFLOAT *tab, frac;
@@ -50,6 +124,7 @@ int aure_mincer_compute(sp_data *sp, sp_mincer *p, SPFLOAT *in2, SPFLOAT *out, u
 
 
         pos = (spos + offset) % size;
+        p->wtpos = spos;
         bwin = (SPFLOAT *) p->bwin.ptr;
         fwin = (SPFLOAT *) p->fwin.ptr;
         prev = (SPFLOAT *)p->prev.ptr;
