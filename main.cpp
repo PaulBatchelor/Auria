@@ -165,9 +165,9 @@ void keyboardFunc( unsigned char key, int x, int y )
             //    AURIA_SCROLL : AURIA_FREEZE;
 
             if(g_data.mode == AURIA_SCROLL || g_data.mode == AURIA_REPLAY) {
-                g_data.mode = AURIA_FREEZE;
+                g_data.mode = AURIA_PLEASE_FREEZE;
             } else if(g_data.mode == AURIA_FREEZE) {
-                g_data.mode = AURIA_REPLAY;
+                g_data.mode = AURIA_PLEASE_REPLAY;
                 g_data.wtpos = g_data.mincer->wtpos;
             }
 

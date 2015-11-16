@@ -8,7 +8,9 @@ extern "C" {
 enum {
     AURIA_SCROLL,
     AURIA_FREEZE,
-    AURIA_REPLAY
+    AURIA_PLEASE_FREEZE,
+    AURIA_REPLAY,
+    AURIA_PLEASE_REPLAY
 };
 
 typedef struct {
