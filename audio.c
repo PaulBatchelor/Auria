@@ -122,9 +122,6 @@ int auria_compute_audio(auria_data *gd)
     sp_port_compute(sp, gd->portY, &pitch, &pitch_port);
     gd->mincer->pitch = pitch_port;
     auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
-    sp_rms_compute(sp, gd->rms, &mincer_out, &rms);
-    sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
-    gd->level = rms_smooth * 4;
     
     unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
     wt_out = gd->wav->tbl[t];
@@ -179,6 +176,10 @@ int auria_compute_audio(auria_data *gd)
     }
     sp->out[0] = out;
     sp->out[1] = out;
+    
+    sp_rms_compute(sp, gd->rms, &out, &rms);
+    sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
+    gd->level = rms_smooth * 4;
 }
 
 float auria_cf(crossfade *cf, float v1, float v2)
