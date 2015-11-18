@@ -24,6 +24,13 @@ CFLAGS += -DMY_SRATE=$(SR) -g
 CXXFLAGS += -DMY_SRATE=$(SR) -g
 endif
 
+ifdef NO_GUI
+CFLAGS += -DNO_GUI=1
+CXXFLAGS += -DNO_GUI=1
+endif
+
+
+
 LIBS+=-Llibs -lsporth -lsoundpipe -lsndfile -L./
 CFLAGS += -Iinclude  -I ./ -DUSE_F310=1
 CXXFLAGS += -Iinclude -DUSE_F310=1

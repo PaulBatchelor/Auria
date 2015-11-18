@@ -57,6 +57,8 @@ typedef struct {
 
     /* Flag to Use portamento time. Should almost always be on.*/
     int use_port;
+
+    int run;
 }auria_data;
 
 int auria_draw(auria_data *gd);

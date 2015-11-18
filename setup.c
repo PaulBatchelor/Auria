@@ -41,6 +41,8 @@ int auria_init(auria_data *gd, char *filename)
 
     gd->accX = 0;
     gd->accY = 0;
+
+    gd->run = 1;
     return 0;
 }
 

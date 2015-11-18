@@ -1,4 +1,5 @@
 #include <math.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <iostream>
 
@@ -229,11 +230,13 @@ int main_loop(int argc, char **argv)
   
     auria_init(&g_data, argv[1]); 
 
+#ifndef NO_GUI
     /* initialize GLUT */
     glutInit( &argc, argv );
     /* init gfx */
     initGfx();
-    
+#endif
+
     audio.showWarnings( true );
     
     RtAudio::StreamParameters iParams, oParams;
@@ -262,7 +265,13 @@ int main_loop(int argc, char **argv)
         audio.startStream();
         
         /* let GLUT handle the current thread from here */
+#ifndef NO_GUI
         glutMainLoop();
+#else
+        while(1) {
+            sleep(1);
+        }
+#endif
         
         /* stop the stream. */
         audio.stopStream();
