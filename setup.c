@@ -2,6 +2,7 @@
 #include "soundpipe.h"
 #include "sporth.h"
 #include "base.h"
+
 int auria_init(auria_data *gd, char *filename)
 {
     gd->sr = MY_SRATE;
