@@ -52,9 +52,9 @@ int auria_draw(auria_data *gd)
         //pY = size * 0.5;
         pY = 0;
     }
+
     float pX = fX2 * (1 - 2 * gd->posX);
    
-    //if(gd->pause == 1) { 
     if(gd->mode == AURIA_FREEZE || gd->mode == AURIA_REPLAY) { 
         glColor3f(0.5607, 0.996, 0.0353);
         

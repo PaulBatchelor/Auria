@@ -31,3 +31,5 @@ swap "seq" tget 12 2 * - 0.1 - mtof 0.1 0 "wt" osc  +
 swap "seq" tget 12 3 * - mtof 0.1 0 "wt" osc  +
 
 0.1 1 sine 500 3000 scale 0.1 moogladder * 2 * 
+
+dup dup 0.97 10000 revsc drop 0.1 * swap 0.8 * +

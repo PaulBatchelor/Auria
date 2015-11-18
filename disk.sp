@@ -1,5 +1,5 @@
-"bach.wav" diskin
-#"samples/aria.wav" diskin
+#"bach.wav" diskin
+"samples/aria.wav" diskin
 
 # add delay
 dup 0.5 0.4 delay 0.5 * +

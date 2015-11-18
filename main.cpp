@@ -35,9 +35,7 @@ using namespace std;
 // number of channels
 #define MY_CHANNELS 2
 // for convenience
-#define MY_PIE 3.14159265358979
 #define BUFSIZE 1024
-#define FFTSIZE 1024
     
 auria_data g_data;
 RtAudio audio;
@@ -83,7 +81,7 @@ static void stop_audio()
 
 }
 
-int main( int argc, char ** argv )
+int main_loop(int argc, char **argv) 
 {
     unsigned int bufferFrames = BUFSIZE;
    
@@ -151,6 +149,12 @@ int main( int argc, char ** argv )
     return 0;
 }
 
+int main( int argc, char ** argv )
+{
+	main_loop(argc, argv);
+	return 0;
+}
+
 
 void keyboardFunc( unsigned char key, int x, int y )
 {
@@ -160,20 +164,6 @@ void keyboardFunc( unsigned char key, int x, int y )
             exit(0);
             break;
         case 32: /* space */
-            //g_data.pause = (g_data.pause == 0) ? 1 : 0;
-            //g_data.mode = (g_data.mode == AURIA_FREEZE) ? 
-            //    AURIA_SCROLL : AURIA_FREEZE;
-
-            //if(g_data.mode == AURIA_SCROLL || g_data.mode == AURIA_REPLAY) {
-            //    g_data.mode = AURIA_PLEASE_FREEZE;
-            //    /* turn on crossfade by setting position to 0*/
-            //    g_data.cf.pos = 0; 
-            //} else if(g_data.mode == AURIA_FREEZE) {
-            //    g_data.mode = AURIA_PLEASE_REPLAY;
-            //    /* turn on crossfade by setting position to 0*/
-            //    g_data.cf.pos = 0; 
-            //    //g_data.wtpos = g_data.mincer->wtpos;
-            //}
 
             auria_switch(&g_data);
 
@@ -282,56 +272,8 @@ void passiveMotionFunc(int x, int y)
     }
 }
 
-int auria_init(auria_data *gd, char *filename)
-{
-    gd->sr = MY_SRATE;
-    gd->state = 1;
-    gd->posY = 0.5;
-    gd->posX = 1;
-    gd->level = 0;
-    gd->offset = 0;
-    gd->nbars = 500;
-    gd->mode = AURIA_SCROLL;
-    gd->soundbars = (float *)malloc(sizeof(float) * gd->nbars);
-    auria_init_audio(gd, filename);
-    gd->counter = 0;
-    gd->counter_speed = (unsigned int) gd->wav->size / gd->nbars;
-    gd->mincer_offset = 0;
-    gd->wtpos = 0;
-    gd->sum = 0;
-
-    unsigned int n;
-    unsigned int skip = gd->wav->size / gd->nbars;
-    SPFLOAT out = 0;
-
-    //for(n = 0; n < gd->wav->size; n++) {
-    //    plumber_compute(&gd->pd, PLUMBER_COMPUTE);
-    //    out = sporth_stack_pop_float(&gd->pd.sporth.stack);
-    //    gd->wav->tbl[n] = out;
-    //}
-
-    for(n = 0; n < gd->nbars; n++) {
-        gd->soundbars[n] = gd->wav->tbl[n * skip];
-    }
-
-    gd->soundbars[0] = 1;
-
-    /* init crossfade TODO: refactor */
-
-    gd->cf.pos = 1;
-    gd->cf.time =  0.05 * gd->sp->sr;
-#ifdef USE_F310    
-    f310_start(&gd->fd, auria_kontrol, gd);
-#endif
-
-    gd->accX = 0;
-    gd->accY = 0;
-    return 0;
-}
-
 void idleFunc( )
 {
-    /* render the scene */
     glutPostRedisplay( );
 }
 

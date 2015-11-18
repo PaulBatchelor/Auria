@@ -28,7 +28,7 @@ LIBS+=-Llibs -lsporth -lsoundpipe -lsndfile -L./
 CFLAGS += -Iinclude  -I ./ -DUSE_F310=1
 CXXFLAGS += -Iinclude -DUSE_F310=1
 
-OBJ=main.o RtAudio.o draw.o audio.o mincer.o f310.o kontrol.o
+OBJ=main.o RtAudio.o draw.o audio.o mincer.o f310.o kontrol.o setup.o
 
 default: auria
 
