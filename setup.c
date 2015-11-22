@@ -7,6 +7,7 @@ int auria_init(auria_data *gd, char *filename)
 {
     gd->sr = MY_SRATE;
     gd->state = 1;
+    gd->state_Y = 1;
     gd->posY = 0.5;
     gd->posX = 1;
     gd->level = 0;
@@ -31,10 +32,10 @@ int auria_init(auria_data *gd, char *filename)
 
     gd->soundbars[0] = 1;
 
-    /* init crossfade TODO: refactor */
-
+    /* init crossfade. TODO: refactor */
     gd->cf.pos = 1;
     gd->cf.time =  0.05 * gd->sp->sr;
+
 #ifdef USE_F310    
     f310_start(&gd->fd, auria_kontrol, gd);
 #endif
@@ -43,6 +44,17 @@ int auria_init(auria_data *gd, char *filename)
     gd->accY = 0;
 
     gd->run = 1;
+
+    /* init linebuf */
+    gd->line = (auria_cor *)malloc(sizeof(auria_cor) * gd->nbars);
+
+    /* for testing purposes, assign random XY values */ 
+
+    for(n = 0; n < gd->nbars; n++) {
+        gd->line[n].x = (float)n/gd->nbars;
+        gd->line[n].y = (float)n/gd->nbars;
+    }
+
     return 0;
 }
 

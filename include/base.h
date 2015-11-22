@@ -21,6 +21,11 @@ typedef struct  {
 } crossfade;
 
 typedef struct {
+    float x, y;
+    int visible;
+} auria_cor;
+
+typedef struct {
     sp_data *sp;
     sp_ftbl *wav;
     auria_mincer *mincer;
@@ -59,6 +64,9 @@ typedef struct {
     int use_port;
 
     int run;
+    
+    /* Line buffer */
+    auria_cor *line;
 }auria_data;
 
 int auria_draw(auria_data *gd);

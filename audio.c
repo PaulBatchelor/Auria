@@ -167,6 +167,10 @@ int auria_compute_audio(auria_data *gd)
     if(mode == AURIA_SCROLL) {
         gd->sum += fabs(out); 
         if(gd->counter == 0) {
+            auria_cor *cor = &gd->line[gd->offset];
+            cor->x = gd->posX;
+            cor->y = gd->posY;
+
             gd->offset = (gd->offset + 1) % gd->nbars;
             gd->soundbars[(gd->offset + (gd->nbars -1)) % gd->nbars] = (float) gd->sum / gd->counter_speed;
             gd->sum = 0;

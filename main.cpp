@@ -204,10 +204,12 @@ static void initGfx()
 
 int auria_destroy(auria_data *gd) 
 {
+    /*TODO: remove audio global variable. place function in setup.c */
     stop_audio();
     auria_destroy_audio(gd);
     f310_stop(&gd->fd);
     free(gd->soundbars);
+    free(gd->line);
     return 0;
 }
 

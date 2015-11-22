@@ -92,7 +92,7 @@ static float joy_to_float(int val)
     if(abs(val) > 1050) {
         float speed = (2 * ((float)(val + 32767) / 65278) - 1);
         /*TODO make this constant based on samplerate */
-        return speed * 0.00001;
+        return speed * 0.00003;
     } else {
         return 0;
     }
