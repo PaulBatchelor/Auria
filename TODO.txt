@@ -1,0 +1,38 @@
+## What we have
+
+A wrapper for Mincer and Sporth that is controllable by the f310 controller on
+Linux. Sporth code plays until the user hits 'A' and freezes the audio.
+Previous audio can be scrubbed in at any speed via the mincer opcode. The
+audio is represented as a waveform. 
+
+
+## What we want
+
+When it starts, no sound is heard. The user must hold down 'A' and 'draw'
+the sound with the left joystick. XY information is sent over channels to a
+Sporth patch, where obvious timbral changes happen. Certain sporth events
+will cause certain shapes to be drawn on the line, indicating markers. When 
+'A' is released, mincer is kicked on, and the line can be scrubbed through 
+using up/down. Hitting 'A" again erases the buffer, and the process starts
+over. 
+
+## TODO
+
+1. Replace waveform data with 2d points. Randomly draw the line. 
+
+2. 'A' + js controls line position. letting go turns on mincer. 
+
+2a. scrolling buffer works
+2b. Make sure scrubbing only works within the range of your line
+
+3. scrubbing follows lines, up+down control
+
+4a. 'A' resets the line
+
+5. Sporth p-channels control visual elements
+
+6. Implement collision engine + random drops
+
+7. Collision switches Sporth patch. 
+
+8. Crossfade
