@@ -13,7 +13,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->level = 0;
     gd->offset = 0;
     gd->nbars = 500;
-    gd->mode = AURIA_SCROLL;
+    gd->mode = AURIA_FREEZE;
     gd->soundbars = (float *)malloc(sizeof(float) * gd->nbars);
     auria_init_audio(gd, filename);
     gd->counter = 0;
@@ -34,7 +34,7 @@ int auria_init(auria_data *gd, char *filename)
 
     /* init crossfade. TODO: refactor */
     gd->cf.pos = 1;
-    gd->cf.time =  0.05 * gd->sp->sr;
+    gd->cf.time =  0.005 * gd->sp->sr;
 
 #ifdef USE_F310    
     f310_start(&gd->fd, auria_kontrol, gd);
@@ -53,8 +53,11 @@ int auria_init(auria_data *gd, char *filename)
     for(n = 0; n < gd->nbars; n++) {
         gd->line[n].x = (float)n/gd->nbars;
         gd->line[n].y = (float)n/gd->nbars;
+        gd->line[n].amp = 1;
     }
-
+    gd->dur = 0;
+    gd->size_s = 0;
+    gd->line_offset = 0;
     return 0;
 }
 

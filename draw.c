@@ -44,18 +44,23 @@ int auria_draw(auria_data *gd)
     /* draw y-ball*/
     int npoints = 256;
     float incr = 2 * M_PI / (npoints - 1);
-    //float size = 0.3 * gd->level;
-    float size = 0.3;
+    float size = 0.1 + 0.3 * gd->level;
     float pY;
+
     if(gd->state_Y == 1) {
         pY = 2 + fY2 * 2 * (gd->posY) + size * 0.5;
     } else {
         //pY = size * 0.5;
         pY = 0;
     }
-
     float pX = fX2 * (1 - 2 * gd->posX);
-   
+    if(gd->mode == AURIA_FREEZE) {
+        //uint32_t index = (uint32_t) floor(gd->posY * gd->dur - 1) % gd->nbars;
+        uint32_t index = (gd->line_offset + (uint32_t) floor(gd->posY * gd->dur - 1)) % gd->nbars;
+        pX = fX1 * (2 * gd->line[index].x - 1);
+        pY = fY2 * (2 * gd->line[index].y - 1);
+    } 
+
    // if(gd->mode == AURIA_FREEZE || gd->mode == AURIA_REPLAY) { 
         glColor3f(0.5607, 0.996, 0.0353);
         
@@ -72,7 +77,6 @@ int auria_draw(auria_data *gd)
         glEnd();
     //}
 
-    glColor3f(0, 0.5, 1);
     GLfloat pos1 = 0;
     GLfloat pos2 = 0;
     float amp = 0;
@@ -80,20 +84,26 @@ int auria_draw(auria_data *gd)
     float barwidth = w / gd->nbars;
     unsigned int offset = gd->offset;
     float frac = ((float)gd->counter / (gd->counter_speed));
-    int indice;
+    int index;
+    glLineWidth(3.0);
+    glColor3f(0, 0.5 , 1);
     glBegin(GL_LINE_STRIP);
-    for(n = 0; n < gd->nbars; n++){
+    uint32_t dur = gd->dur;
+    for(n = 0; n < dur; n++){
+        index = (gd->nbars - n + offset - 1) % gd->nbars;
+        amp = gd->line[index].amp;
+        glColor3f(0, 0.5, 1.0);
         pos1 = 2 * (((n - frac) * barwidth) / w) - 1;
         pos1 = (fX1 * pos1) / fX2;
 
         pos2 = 2 * (((n + 1 - frac) * barwidth) / w) - 1;
         pos2 = (fX1 * pos2) / fX2;
 
-        amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
+        //amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
         //glVertex2f(fX2 * pos1, fY2 * amp);
         //glVertex2f(fX2 * pos1, fY1 * amp);
-        glVertex2f(fX1 * (2 * gd->line[(n + offset) % gd->nbars].x - 1), 
-                fY2 * (2 * gd->line[(n + offset) % gd->nbars].y - 1));
+        glVertex2f(fX1 * (2 * gd->line[index].x - 1), 
+                fY2 * (2 * gd->line[index].y - 1));
         
         //glVertex2f(fX2 * pos2, fY2 * amp);
         //glVertex2f(fX2 * pos2, fY1 * amp);

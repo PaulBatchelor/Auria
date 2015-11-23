@@ -12,6 +12,7 @@ typedef struct {
     sp_ftbl *ft;
     sp_fft fft;
     uint32_t wtpos;
+    uint32_t size;
 } auria_mincer;
 
 int auria_mincer_create(auria_mincer **p);

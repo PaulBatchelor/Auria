@@ -23,6 +23,7 @@ typedef struct  {
 typedef struct {
     float x, y;
     int visible;
+    float amp;
 } auria_cor;
 
 typedef struct {
@@ -67,6 +68,10 @@ typedef struct {
     
     /* Line buffer */
     auria_cor *line;
+    uint32_t dur;
+    /* length of audio chunk in samples */
+    uint32_t size_s;
+    uint32_t line_offset;
 }auria_data;
 
 int auria_draw(auria_data *gd);

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include "soundpipe.h"
 #include "sporth.h"
 #include "base.h"
@@ -54,6 +55,9 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 break;
             case JOY_L_Y: 
                 ad->accY = joy_to_float(val);
+                if(ad->mode == AURIA_FREEZE) {
+                    ad->accY = -joy_to_float(val);
+                }
                 break;
             default: break;
         }
@@ -72,11 +76,24 @@ int auria_switch(auria_data *ad)
 
         /* temporary way to mask some clicking. */
         if(ad->posX == 1) {
-             ad->posX = (float)(ad->wav->size - 1.5 * ad->cf.time) / ad->wav->size;
+             //ad->posX = (float)(ad->wav->size - 1.5 * ad->cf.time) / ad->wav->size;
         }
+        printf("size is %d\n", ad->size_s);
+        ad->mincer->size = ad->size_s;
+        ad->posY = 1;
     } else if(ad->mode == AURIA_FREEZE) {
-        ad->mode = AURIA_PLEASE_REPLAY;
+        //ad->mode = AURIA_PLEASE_REPLAY;
+        ad->mode = AURIA_SCROLL;
+        uint32_t index = (uint32_t) floor(ad->posY * ad->dur - 1) % ad->nbars;
+        ad->posX = ad->line[index].x;
+        ad->posY = ad->line[index].y;
         ad->cf.pos = 0;
+        ad->dur = 0;
+        ad->offset = 0;
+        ad->size_s = 0;
+        ad->line_offset = 0;
+        ad->mincer_offset = 0;
+        /* TODO: change this variable to size_s */
         //g_data.wtpos = g_data.mincer->wtpos;
     }
 }
@@ -92,7 +109,7 @@ static float joy_to_float(int val)
     if(abs(val) > 1050) {
         float speed = (2 * ((float)(val + 32767) / 65278) - 1);
         /*TODO make this constant based on samplerate */
-        return speed * 0.00003;
+        return speed * 0.00001;
     } else {
         return 0;
     }

@@ -20,16 +20,16 @@
 
 "amps" "1 0.1 0.1 0.1" gen_vals
 
-4 120 * 60 / metro 0 pset
+2 120 * 60 / metro 2 pset
 
-0 p 0.01 0.0 0.08 tenv 
+2 p 0.01 0.0 0.08 tenv 
 
-0 p dup 16 0 count dup 1 pset 0 eq * 4 0 count dup dup
+2 p dup 2 0 count dup 3 pset 0 eq * 4 0 count dup dup
 
 "seq" tget 12 2 * - 0.1 + mtof 0.1 0 "wt" osc 
 swap "seq" tget 12 2 * - 0.1 - mtof 0.1 0 "wt" osc  +
 swap "seq" tget 12 3 * - mtof 0.1 0 "wt" osc  +
 
-0.1 1 sine 500 3000 scale 0.1 moogladder * 2 * 
+0 p 10 4000 scale 0.1 moogladder * 2 * 
 
 dup dup 0.97 10000 revsc drop 0.1 * swap 0.8 * +

@@ -88,7 +88,7 @@ int auria_mincer_init(sp_data *sp, auria_mincer *p, sp_ftbl *ft)
 
     p->N = N;
     p->decim = decim;
-
+    p->size = p->ft->size;
     return SP_OK;
 }
 
@@ -98,7 +98,8 @@ int auria_mincer_compute(sp_data *sp, auria_mincer *p, SPFLOAT *in2, SPFLOAT *ou
     SPFLOAT *tab, frac;
     sp_ftbl *ft = p->ft;
     int N = p->N, hsize = p->hsize, cnt = p->cnt;
-    int sizefrs, size, post, i;
+    int sizefrs, post, i;
+    uint32_t size;
     long spos = p->pos;
     SPFLOAT pos;
     SPFLOAT *fwin, *bwin, insig = 0,
@@ -111,7 +112,7 @@ int auria_mincer_compute(sp_data *sp, auria_mincer *p, SPFLOAT *in2, SPFLOAT *ou
 
     if (cnt == hsize) {
         tab = ft->tbl;
-        size = ft->size;
+        size = p->size;
 
         /* spos is the reading position in samples, hsize is hopsize,
         time[n] is current read position in secs
