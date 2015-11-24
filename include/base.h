@@ -68,11 +68,14 @@ typedef struct {
     
     /* Line buffer */
     auria_cor *line;
+    auria_cor *tmp_line;
     uint32_t dur;
     /* length of audio chunk in samples */
     uint32_t size_s;
     uint32_t line_offset;
     uint32_t tbl_pos;
+
+    int drawline;
 }auria_data;
 
 int auria_draw(auria_data *gd);

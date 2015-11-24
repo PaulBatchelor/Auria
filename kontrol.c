@@ -81,6 +81,7 @@ int auria_switch(auria_data *ad)
         printf("size is %d offset is %d\n", ad->size_s, ad->mincer_offset);
         ad->mincer->size = ad->size_s;
         ad->posY = 1;
+        ad->drawline = 0;
     } else if(ad->mode == AURIA_FREEZE) {
         //ad->mode = AURIA_PLEASE_REPLAY;
         ad->mode = AURIA_SCROLL;
@@ -94,6 +95,9 @@ int auria_switch(auria_data *ad)
         ad->line_offset = 0;
         ad->mincer_offset = 0;
         ad->tbl_pos = 0;
+        ad->counter = 0;
+        ad->sum = 0;
+        ad->drawline = 0;
         /* TODO: change this variable to size_s */
         //g_data.wtpos = g_data.mincer->wtpos;
     }

@@ -199,7 +199,7 @@ static void initGfx()
     glEnable( GL_COLOR_MATERIAL );
     /* enable depth test */
     glEnable( GL_DEPTH_TEST );
-    glEnable( GL_BLEND );
+    //glEnable( GL_BLEND );
 }
 
 int auria_destroy(auria_data *gd) 
@@ -210,6 +210,7 @@ int auria_destroy(auria_data *gd)
     f310_stop(&gd->fd);
     free(gd->soundbars);
     free(gd->line);
+    free(gd->tmp_line);
     return 0;
 }
 

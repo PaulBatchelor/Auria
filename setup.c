@@ -47,6 +47,7 @@ int auria_init(auria_data *gd, char *filename)
 
     /* init linebuf */
     gd->line = (auria_cor *)malloc(sizeof(auria_cor) * gd->nbars);
+    gd->tmp_line = (auria_cor *)malloc(sizeof(auria_cor) * gd->nbars);
 
     /* for testing purposes, assign random XY values */ 
 
@@ -59,6 +60,8 @@ int auria_init(auria_data *gd, char *filename)
     gd->size_s = 0;
     gd->line_offset = 0;
     gd->tbl_pos = 0;
+
+    gd->drawline = 0;
     return 0;
 }
 

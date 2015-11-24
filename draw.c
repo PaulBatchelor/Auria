@@ -13,6 +13,8 @@
 #include "math.h"
 #include "base.h"
 
+#define min(a, b) (a < b) ? a : b
+
 int auria_draw(auria_data *gd)
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -83,35 +85,45 @@ int auria_draw(auria_data *gd)
     float w = gd->w;
     float barwidth = w / gd->nbars;
     unsigned int offset = gd->offset;
-    float frac = ((float)gd->counter / (gd->counter_speed));
+    //float frac = ((float)gd->counter / (gd->counter_speed));
+    float frac = 0;
     int index;
     glLineWidth(3.0);
     glColor3f(0, 0.5 , 1);
-    glBegin(GL_LINE_STRIP);
     uint32_t dur = gd->dur;
+    glBegin(GL_LINE_STRIP);
+    float x, y;
     for(n = 0; n < dur; n++){
         index = (gd->nbars - n + offset - 1) % gd->nbars;
+        x = gd->line[index].x;
+        y = gd->line[index].y;
         amp = gd->line[index].amp;
-        glColor3f(0, 0.5, 1.0);
-        pos1 = 2 * (((n - frac) * barwidth) / w) - 1;
+        //pos1 = 2 * (((n - frac) * barwidth) / w) - 1;
+        pos1 = 2 * (((n) * barwidth) / w) - 1;
         pos1 = (fX1 * pos1) / fX2;
-
-        pos2 = 2 * (((n + 1 - frac) * barwidth) / w) - 1;
+        //pos2 = 2 * (((n + 1 - frac) * barwidth) / w) - 1;
+        pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
         pos2 = (fX1 * pos2) / fX2;
-
-        //amp = -1 * gd->soundbars[(n + offset) % gd->nbars];
-        //glVertex2f(fX2 * pos1, fY2 * amp);
-        //glVertex2f(fX2 * pos1, fY1 * amp);
-        glVertex2f(fX1 * (2 * gd->line[index].x - 1), 
-                fY2 * (2 * gd->line[index].y - 1));
         
-        //glVertex2f(fX2 * pos2, fY2 * amp);
-        //glVertex2f(fX2 * pos2, fY1 * amp);
-        //glVertex2f(fX2 * gd->line[n].x, fY1 * gd->line[n].y);
+        glVertex2f(fX1 * (2 * x - 1), 
+                fY2 * (2 * y - 1));
     }
     glEnd();
     
-    glFlush( );
+    if(gd->drawline == 1) {
+        auria_cor *cor = &gd->line[gd->offset];
+        cor->x = gd->posX;
+        cor->y = gd->posY;
+        gd->dur++;
+        gd->dur = min(gd->dur, gd->nbars - 1);
+        gd->offset = (gd->offset + 1) % gd->nbars;
+        gd->drawline = 0;
+        if(gd->size_s >= gd->wav->size) {
+            gd->line_offset = (gd->line_offset + 1) % gd->nbars;
+        }
+    }
+    
     glutSwapBuffers( );
+    glFlush( );
     return 0;
 }
