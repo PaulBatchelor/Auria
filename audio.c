@@ -114,10 +114,12 @@ int auria_compute_audio(auria_data *gd)
     sp_port_compute(sp, gd->portY, &gd->posY, &time_control);
 
     gd->mincer->time = time_control * (gd->size_s) * gd->onedsr;
-    if(gd->size_s != 0)
-    gd->mincer->time -= gd->mincer_offset * gd->onedsr;
+    //if(gd->size_s != 0) {
+    //    gd->mincer->time -= gd->mincer_offset * gd->onedsr;
+    //}
     //gd->mincer->pitch = pitch_port;
     //auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
+    //
     auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, 
             gd->mincer_offset
             );
