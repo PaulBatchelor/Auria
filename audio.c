@@ -66,21 +66,6 @@ int auria_destroy_audio(auria_data *gd)
     plumber_clean(&gd->pd);
     return 0;
 }
-
-/*
-static float gen_scale(float pos) {
-    float base = sp_midi2cps(60);
-    float out = 0;
-    int scale[] = {
-        -12, -10, -8, -5, -3,
-        0, 2, 4, 7, 9, 12
-    };
-
-    out = sp_midi2cps(60 + scale[(int)round((LENGTH(scale) - 1) * pos)]) / base;
-
-    return out;
-}
-*/
 int auria_compute_audio(auria_data *gd)
 {
     sp_data *sp = gd->sp;
@@ -114,15 +99,7 @@ int auria_compute_audio(auria_data *gd)
     sp_port_compute(sp, gd->portY, &gd->posY, &time_control);
 
     gd->mincer->time = time_control * (gd->size_s) * gd->onedsr;
-    //if(gd->size_s != 0) {
-    //    gd->mincer->time -= gd->mincer_offset * gd->onedsr;
-    //}
-    //gd->mincer->pitch = pitch_port;
-    //auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
-    //
-    auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, 
-            gd->mincer_offset
-            );
+    auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
     
     unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
     wt_out = gd->wav->tbl[t];

@@ -122,14 +122,7 @@ int auria_mincer_compute(sp_data *sp, auria_mincer *p, SPFLOAT *in2, SPFLOAT *ou
         while(spos > sizefrs) spos -= sizefrs;
         while(spos <= 0)  spos += sizefrs;
 
-
-        //pos = (spos + offset) % size;
-        //pos = (spos + 72025) % size;
         pos = fmod(spos + offset, size);
-        //if(offset != 0) {
-        //if(1) {
-        //    printf("pos is %g spos is %d offset is %d\n", pos, spos, offset);
-        //}
         bwin = (SPFLOAT *) p->bwin.ptr;
         fwin = (SPFLOAT *) p->fwin.ptr;
         prev = (SPFLOAT *)p->prev.ptr;
