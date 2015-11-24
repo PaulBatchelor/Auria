@@ -72,6 +72,7 @@ typedef struct {
     /* length of audio chunk in samples */
     uint32_t size_s;
     uint32_t line_offset;
+    uint32_t tbl_pos;
 }auria_data;
 
 int auria_draw(auria_data *gd);

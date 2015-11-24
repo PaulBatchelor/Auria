@@ -61,7 +61,6 @@ int auria_mincer_init(sp_data *sp, auria_mincer *p, sp_ftbl *ft)
     p->cnt = p->hsize;
     p->curframe = 0;
     p->pos = 0;
-    p->wtpos = 0;
 
     size = (N+2)*sizeof(SPFLOAT);
     sp_auxdata_alloc(&p->fwin, size);
@@ -124,8 +123,9 @@ int auria_mincer_compute(sp_data *sp, auria_mincer *p, SPFLOAT *in2, SPFLOAT *ou
         while(spos <= 0)  spos += sizefrs;
 
 
-        pos = (spos + offset) % size;
-        p->wtpos = spos;
+        //pos = (spos + offset) % size;
+        //pos = (spos + 72025) % size;
+        pos = fmod(spos + offset, size);
         bwin = (SPFLOAT *) p->bwin.ptr;
         fwin = (SPFLOAT *) p->fwin.ptr;
         prev = (SPFLOAT *)p->prev.ptr;

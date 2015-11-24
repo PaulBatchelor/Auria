@@ -18,9 +18,9 @@ int auria_init_audio(auria_data *gd, char *filename)
     auria_mincer_create(&gd->mincer);
     auria_mincer_init(sp, gd->mincer, gd->wav);
     sp_port_create(&gd->portX);
-    sp_port_init(sp, gd->portX, 0.01);
+    sp_port_init(sp, gd->portX, 0.5);
     sp_port_create(&gd->portY);
-    sp_port_init(sp, gd->portY, 0.5);
+    sp_port_init(sp, gd->portY, 0.01);
     gd->onedsr = 1.0 / sp->sr;
 
     sp_port_create(&gd->rms_smooth);
@@ -67,6 +67,7 @@ int auria_destroy_audio(auria_data *gd)
     return 0;
 }
 
+/*
 static float gen_scale(float pos) {
     float base = sp_midi2cps(60);
     float out = 0;
@@ -79,7 +80,7 @@ static float gen_scale(float pos) {
 
     return out;
 }
-
+*/
 int auria_compute_audio(auria_data *gd)
 {
     sp_data *sp = gd->sp;
@@ -87,25 +88,15 @@ int auria_compute_audio(auria_data *gd)
     SPFLOAT mincer_out = 0;
     SPFLOAT wt_out = 0;
     SPFLOAT out = 4;
-    SPFLOAT posX = 0;
-    SPFLOAT posY = 0;
-    SPFLOAT pitch = 1;
-    SPFLOAT pitch_port = 1;
+    SPFLOAT time_control = 0;
     SPFLOAT rms = 0;
     SPFLOAT rms_smooth = 0;
-    SPFLOAT mix = 0;
     if(gd->mode == AURIA_PLEASE_FREEZE) gd->mode = AURIA_FREEZE;
     if(gd->mode == AURIA_PLEASE_REPLAY) {
         gd->mode = AURIA_REPLAY;
         gd->wtpos = gd->mincer->wtpos - 1;
     }
     int mode = gd->mode;
-    if(gd->state_Y == 1) {
-        pitch = 2 * (1 - gd->posY);
-        //pitch = gen_scale(1 - gd->posY);
-    } else {
-        pitch = 1;
-    }
 
     gd->posX = gd->posX + gd->accX;
     gd->posY = gd->posY + gd->accY;
@@ -120,17 +111,16 @@ int auria_compute_audio(auria_data *gd)
     if(gd->posY > 1) gd->posY = 1;
     else if(gd->posY < 0) gd->posY = 0;
 
+    sp_port_compute(sp, gd->portY, &gd->posY, &time_control);
 
-    sp_port_compute(sp, gd->portX, &gd->posY, &posX);
-    sp_port_compute(sp, gd->portY, &pitch, &pitch_port);
-
-    /* posx is actually Y pos now */
-    //gd->mincer->time = posX * gd->wav->size * gd->onedsr;
-    gd->mincer->time = posX * (gd->size_s) * gd->onedsr;
+    gd->mincer->time = time_control * (gd->size_s) * gd->onedsr;
     if(gd->size_s != 0)
     gd->mincer->time -= gd->mincer_offset * gd->onedsr;
     //gd->mincer->pitch = pitch_port;
-    auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
+    //auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, gd->mincer_offset);
+    auria_mincer_compute(sp, gd->mincer, NULL, &mincer_out, 
+            gd->mincer_offset
+            );
     
     unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
     wt_out = gd->wav->tbl[t];
@@ -138,36 +128,17 @@ int auria_compute_audio(auria_data *gd)
     if(mode == AURIA_SCROLL) {
         plumber_compute(&gd->pd, PLUMBER_COMPUTE);
         sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
-/* the following ungodly lines of code will delay the incoming sporth input by 
- * the crossfade time (in samples). This is done to ensure a smooth crossfade.
- *
- * cf.time = crossfade time (in samples)
- * mincer_offset = ftable offset position (because of scrolling)
- * wave->size = ftable wave size
- *
- * TODO: refactor so this block comment describes a single function, not a block 
- * of code in a conditional. 
- *
- */
-        //gd->wav->tbl[(gd->mincer_offset + gd->wav->size + gd->cf.time) % gd->wav->size] 
-        //    = sporth_out;
-        gd->wav->tbl[(gd->size_s + gd->wav->size) % gd->wav->size] 
+        uint32_t pos = (gd->size_s - gd->mincer_offset) % gd->wav->size;
+        gd->wav->tbl[gd->tbl_pos] 
             = sporth_out;
-        //out = gd->wav->tbl[(gd->mincer_offset + gd->wav->size) % gd->wav->size];
         out = sporth_out;
     } else if(mode == AURIA_FREEZE) {
-        //out = mincer_out;
         out = auria_cf(&gd->cf, wt_out, mincer_out);
-        //if(auria_cf_check(&gd->cf)) {
-        //    gd->wtpos++;
-        //}
     } else if (mode == AURIA_REPLAY) {
         if( gd->wtpos + 1 > gd->wav->size) {
             gd->mode = AURIA_SCROLL;
-            printf("wave position is %d wave size is %d\n", gd->wtpos, gd->wav->size);
+            printf("wave position is %d wave size is %ld\n", gd->wtpos, gd->wav->size);
         } 
-        //unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
-        //out = auria_cf(&gd->cf, mincer_out, gd->wav->tbl[t]);
         out = auria_cf(&gd->cf, mincer_out, wt_out);
         gd->posX = (float)(gd->wtpos) / gd->wav->size;
         gd->wtpos++; 
@@ -192,12 +163,12 @@ int auria_compute_audio(auria_data *gd)
             gd->dur = min(gd->dur, gd->nbars);
         }
         gd->counter = (gd->counter + 1) % gd->counter_speed;
-        /* TODO: remove mincer_offset, since we are no longer scrolling? */
 
         gd->size_s = min((gd->size_s + 1), gd->wav->size);
         if(gd->size_s >= gd->wav->size) {
             gd->mincer_offset = (gd->mincer_offset + 1) % gd->wav->size;
         }
+        gd->tbl_pos = (gd->tbl_pos + 1) % gd->wav->size;
     }
     sp->out[0] = out;
     sp->out[1] = out;
@@ -205,6 +176,8 @@ int auria_compute_audio(auria_data *gd)
     sp_rms_compute(sp, gd->rms, &out, &rms);
     sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
     gd->level = rms_smooth * 4;
+
+    return 0;
 }
 
 float auria_cf(crossfade *cf, float v1, float v2)

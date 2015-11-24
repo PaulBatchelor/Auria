@@ -71,14 +71,14 @@ int auria_switch(auria_data *ad)
         ad->cf.pos = 0;
     } else if (ad->mode == AURIA_SCROLL) {
         ad->mode = AURIA_PLEASE_FREEZE;
-        ad->cf.pos = 0;
+        //ad->cf.pos = 0;
         /* TODO: add buffering to sporth signal, so crossfade behaves the same */
 
         /* temporary way to mask some clicking. */
-        if(ad->posX == 1) {
+        //if(ad->posX == 1) {
              //ad->posX = (float)(ad->wav->size - 1.5 * ad->cf.time) / ad->wav->size;
-        }
-        printf("size is %d\n", ad->size_s);
+        //}
+        printf("size is %d offset is %d\n", ad->size_s, ad->mincer_offset);
         ad->mincer->size = ad->size_s;
         ad->posY = 1;
     } else if(ad->mode == AURIA_FREEZE) {
@@ -93,6 +93,7 @@ int auria_switch(auria_data *ad)
         ad->size_s = 0;
         ad->line_offset = 0;
         ad->mincer_offset = 0;
+        ad->tbl_pos = 0;
         /* TODO: change this variable to size_s */
         //g_data.wtpos = g_data.mincer->wtpos;
     }

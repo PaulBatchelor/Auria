@@ -58,6 +58,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->dur = 0;
     gd->size_s = 0;
     gd->line_offset = 0;
+    gd->tbl_pos = 0;
     return 0;
 }
 
