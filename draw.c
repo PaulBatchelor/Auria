@@ -17,6 +17,8 @@
 
 int auria_draw(auria_data *gd)
 {
+    glClearColor(1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 );
+
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     int n;

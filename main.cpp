@@ -194,7 +194,7 @@ static void initGfx()
     glutPassiveMotionFunc(passiveMotionFunc); 
 
     /* set clear color */
-    glClearColor( 0, 0, 0, 1 );
+    glClearColor( 1, 1, 1, 1 );
     /* enable color material */
     glEnable( GL_COLOR_MATERIAL );
     /* enable depth test */
