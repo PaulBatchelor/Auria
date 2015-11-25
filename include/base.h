@@ -22,7 +22,6 @@ typedef struct  {
 
 typedef struct {
     float x, y;
-    int visible;
     float amp;
 } auria_cor;
 

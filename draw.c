@@ -17,9 +17,6 @@
 
 int auria_draw(auria_data *gd)
 {
-    glClearColor(1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 );
-
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     int n;
 
@@ -45,7 +42,6 @@ int auria_draw(auria_data *gd)
     gluUnProject(0, 0, 0.8182, model, proj, view, &fX2, &fY2, &fZ2);
 
     
-    /* draw y-ball*/
     int npoints = 256;
     float incr = 2 * M_PI / (npoints - 1);
     float size = 0.1 + 0.3 * gd->level;
@@ -54,42 +50,40 @@ int auria_draw(auria_data *gd)
     if(gd->state_Y == 1) {
         pY = 2 + fY2 * 2 * (gd->posY) + size * 0.5;
     } else {
-        //pY = size * 0.5;
         pY = 0;
     }
     float pX = fX2 * (1 - 2 * gd->posX);
     if(gd->mode == AURIA_FREEZE) {
-        //uint32_t index = (uint32_t) floor(gd->posY * gd->dur - 1) % gd->nbars;
         uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->dur- 1))) % (gd->nbars);
-        //printf("index is %d, offset is %d\n", index, gd->line_offset);
         pX = fX1 * (2 * gd->line[index].x - 1);
         pY = fY2 * (2 * gd->line[index].y - 1);
-    } 
+        glClearColor(
+                1 * gd->line[index].amp, 
+                1 * gd->line[index].amp, 
+                1 * gd->line[index].amp, 
+                1);
+    } else {
+        glClearColor(1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 );
+    }
 
-   // if(gd->mode == AURIA_FREEZE || gd->mode == AURIA_REPLAY) { 
-        glColor3f(0.5607, 0.996, 0.0353);
-        
-        //glBegin(GL_LINES);
-        //glVertex2f(fX2 * (1 - 2 * gd->posX), fY2 );
-        //glVertex2f(fX2 * (1 - 2 * gd->posX), fY1);
-        //glEnd();
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-        glBegin(GL_TRIANGLE_FAN);
-            for(n = 0; n < npoints; n++) {
-                glVertex2f(pX + size * cos(n * incr), 
-                        pY + (size * sin(n * incr)));
-            }
-        glEnd();
-    //}
+    /* Draw the ball */
+
+    glColor3f(0.5607, 0.996, 0.0353);
+    
+    glBegin(GL_TRIANGLE_FAN);
+        for(n = 0; n < npoints; n++) {
+            glVertex2f(pX + size * cos(n * incr), 
+                    pY + (size * sin(n * incr)));
+        }
+    glEnd();
 
     GLfloat pos1 = 0;
     GLfloat pos2 = 0;
-    float amp = 0;
     float w = gd->w;
     float barwidth = w / gd->nbars;
     unsigned int offset = gd->offset;
-    //float frac = ((float)gd->counter / (gd->counter_speed));
-    float frac = 0;
     int index;
     glLineWidth(3.0);
     glColor3f(0, 0.5 , 1);
@@ -100,11 +94,8 @@ int auria_draw(auria_data *gd)
         index = (gd->nbars - n + offset - 1) % gd->nbars;
         x = gd->line[index].x;
         y = gd->line[index].y;
-        amp = gd->line[index].amp;
-        //pos1 = 2 * (((n - frac) * barwidth) / w) - 1;
         pos1 = 2 * (((n) * barwidth) / w) - 1;
         pos1 = (fX1 * pos1) / fX2;
-        //pos2 = 2 * (((n + 1 - frac) * barwidth) / w) - 1;
         pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
         pos2 = (fX1 * pos2) / fX2;
         
@@ -117,14 +108,11 @@ int auria_draw(auria_data *gd)
         auria_cor *cor = &gd->line[gd->offset];
         cor->x = gd->posX;
         cor->y = gd->posY;
+        cor->amp = gd->pd.p[2];
         gd->dur++;
         gd->dur = min(gd->dur, gd->nbars);
         gd->offset = (gd->offset + 1) % gd->nbars;
         gd->drawline = 0;
-        //if(gd->size_s >= gd->wav->size) {
-        //    gd->line_offset = (gd->line_offset + 1) % gd->nbars;
-        //}
-        
         if(gd->dur >= gd->nbars) {
             gd->line_offset = (gd->line_offset + 1) % (gd->nbars);
         }
