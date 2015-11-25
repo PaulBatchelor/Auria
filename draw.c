@@ -58,7 +58,8 @@ int auria_draw(auria_data *gd)
     float pX = fX2 * (1 - 2 * gd->posX);
     if(gd->mode == AURIA_FREEZE) {
         //uint32_t index = (uint32_t) floor(gd->posY * gd->dur - 1) % gd->nbars;
-        uint32_t index = (gd->line_offset + (uint32_t) floor(gd->posY * gd->dur - 1)) % gd->nbars;
+        uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->dur- 1))) % (gd->nbars);
+        //printf("index is %d, offset is %d\n", index, gd->line_offset);
         pX = fX1 * (2 * gd->line[index].x - 1);
         pY = fY2 * (2 * gd->line[index].y - 1);
     } 
@@ -115,11 +116,15 @@ int auria_draw(auria_data *gd)
         cor->x = gd->posX;
         cor->y = gd->posY;
         gd->dur++;
-        gd->dur = min(gd->dur, gd->nbars - 1);
+        gd->dur = min(gd->dur, gd->nbars);
         gd->offset = (gd->offset + 1) % gd->nbars;
         gd->drawline = 0;
-        if(gd->size_s >= gd->wav->size) {
-            gd->line_offset = (gd->line_offset + 1) % gd->nbars;
+        //if(gd->size_s >= gd->wav->size) {
+        //    gd->line_offset = (gd->line_offset + 1) % gd->nbars;
+        //}
+        
+        if(gd->dur >= gd->nbars) {
+            gd->line_offset = (gd->line_offset + 1) % (gd->nbars);
         }
     }
     

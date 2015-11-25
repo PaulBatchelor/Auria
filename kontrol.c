@@ -78,14 +78,15 @@ int auria_switch(auria_data *ad)
         //if(ad->posX == 1) {
              //ad->posX = (float)(ad->wav->size - 1.5 * ad->cf.time) / ad->wav->size;
         //}
-        printf("size is %d offset is %d\n", ad->size_s, ad->mincer_offset);
+        printf("size is %d line offset is %d\n", ad->size_s, ad->line_offset);
         ad->mincer->size = ad->size_s;
         ad->posY = 1;
         ad->drawline = 0;
     } else if(ad->mode == AURIA_FREEZE) {
         //ad->mode = AURIA_PLEASE_REPLAY;
         ad->mode = AURIA_SCROLL;
-        uint32_t index = (uint32_t) floor(ad->posY * ad->dur - 1) % ad->nbars;
+        //uint32_t index = (uint32_t) (floor(ad->posY * ad->dur)) % ad->nbars;
+        uint32_t index = (uint32_t) (ad->line_offset + floor(ad->posY * ad->dur - 1)) % ad->nbars;
         ad->posX = ad->line[index].x;
         ad->posY = ad->line[index].y;
         ad->cf.pos = 0;
@@ -98,8 +99,6 @@ int auria_switch(auria_data *ad)
         ad->counter = 0;
         ad->sum = 0;
         ad->drawline = 0;
-        /* TODO: change this variable to size_s */
-        //g_data.wtpos = g_data.mincer->wtpos;
     }
 }
 
