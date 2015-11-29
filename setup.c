@@ -55,6 +55,7 @@ int auria_init(auria_data *gd, char *filename)
         gd->line[n].x = (float)n/gd->nbars;
         gd->line[n].y = (float)n/gd->nbars;
         gd->line[n].amp = 1;
+        gd->line[n].draw_circ = 0;
     }
     gd->dur = 0;
     gd->size_s = 0;
@@ -62,6 +63,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->tbl_pos = 0;
 
     gd->drawline = 0;
+
+    gd->please_draw_circ = 0;
     return 0;
 }
-

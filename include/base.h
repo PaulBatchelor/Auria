@@ -5,8 +5,10 @@ extern "C" {
 #include "mincer.h"
 #define AURIA_MINCER 1
 #endif
-
 #include "f310.h"
+
+#define AURIA_STACK_SIZE 32
+
 enum {
     AURIA_SCROLL,
     AURIA_FREEZE,
@@ -23,7 +25,13 @@ typedef struct  {
 typedef struct {
     float x, y;
     float amp;
+    int draw_circ;
 } auria_cor;
+
+typedef struct {
+    auria_cor stack[AURIA_STACK_SIZE];
+    unsigned int pos;
+} auria_stack;
 
 typedef struct {
     sp_data *sp;
@@ -75,12 +83,16 @@ typedef struct {
     uint32_t tbl_pos;
 
     int drawline;
+    int please_draw_circ;
+
+    auria_stack circle_stack;
 }auria_data;
 
 int auria_draw(auria_data *gd);
 /* Initializers */
 int auria_init(auria_data *gd, char *filename);
 int auria_init_audio(auria_data *gd, char *filename);
+
 
 int auria_compute_audio(auria_data *gd);
 
@@ -93,6 +105,15 @@ int auria_cf_check(crossfade *cf);
 void auria_kontrol(int type, int ctl, int val, void *ud);
 int auria_switch(auria_data *ad);
 int auria_toggle_pitch(auria_data *ad);
+
+/* stack operations */
+
+int auria_stack_init(auria_stack *stack);
+
+int auria_stack_push(auria_stack *stack, auria_cor *cor);
+unsigned int auria_stack_get_size(auria_stack *stack);
+int auria_stack_pop(auria_stack *stack, auria_cor **cor);
+
 #ifdef __cplusplus
 }
 #endif

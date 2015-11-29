@@ -19,7 +19,6 @@ int auria_draw(auria_data *gd)
 {
 
     int n;
-
     uint32_t skip = gd->wav->size / gd->w;
     GLfloat depth = 0;
     GLdouble fX1, fY1, fZ1;
@@ -90,10 +89,19 @@ int auria_draw(auria_data *gd)
     uint32_t dur = gd->dur;
     glBegin(GL_LINE_STRIP);
     float x, y;
+
+    auria_cor *cor = NULL;
+    auria_stack_init(&gd->circle_stack);
     for(n = 0; n < dur; n++){
         index = (gd->nbars - n + offset - 1) % gd->nbars;
-        x = gd->line[index].x;
-        y = gd->line[index].y;
+        cor = &gd->line[index];
+        x = cor->x;
+        y = cor->y;
+
+        if(gd->line[index].draw_circ == 1) {
+            auria_stack_push(&gd->circle_stack, cor);
+        }
+
         pos1 = 2 * (((n) * barwidth) / w) - 1;
         pos1 = (fX1 * pos1) / fX2;
         pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
@@ -101,14 +109,50 @@ int auria_draw(auria_data *gd)
         
         glVertex2f(fX1 * (2 * x - 1), 
                 fY2 * (2 * y - 1));
+
+
     }
     glEnd();
-    
+   
+    float x1, x2, y1, y2;
+
+    unsigned int stack_size = (uint32_t)auria_stack_get_size(&gd->circle_stack);
+
+    for(n = 0; n < stack_size; n++) {
+        cor = NULL;
+        auria_stack_pop(&gd->circle_stack, &cor);
+
+        if(cor == NULL) {
+            fprintf(stderr, "ERROR!\n");
+        }
+
+        size = 0.05;
+
+        x1 = fX1 * (2 * cor->x - 1) - size;
+        x2 = fX1 * (2 * cor->x - 1) + size;
+
+        y1 = fY2 * (2 * cor->y - 1) + size;
+        y2 = fY2 * (2 * cor->y - 1) - size;
+
+        glBegin(GL_TRIANGLE_FAN);
+            glVertex2f(x1, y1);
+            glVertex2f(x1, y2);
+            glVertex2f(x2, y2);
+            glVertex2f(x2, y1);
+        glEnd();
+    }
+
     if(gd->drawline == 1) {
-        auria_cor *cor = &gd->line[gd->offset];
+    int please_draw_circ = gd->please_draw_circ;
+        cor = &gd->line[gd->offset];
         cor->x = gd->posX;
         cor->y = gd->posY;
         cor->amp = gd->pd.p[2];
+        cor->draw_circ = 0;
+        if(please_draw_circ == 1) {
+            cor->draw_circ = 1;
+            gd->please_draw_circ = 0;
+        }
         gd->dur++;
         gd->dur = min(gd->dur, gd->nbars);
         gd->offset = (gd->offset + 1) % gd->nbars;
@@ -116,6 +160,7 @@ int auria_draw(auria_data *gd)
         if(gd->dur >= gd->nbars) {
             gd->line_offset = (gd->line_offset + 1) % (gd->nbars);
         }
+
     }
     
     glutSwapBuffers( );

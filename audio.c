@@ -88,6 +88,7 @@ int auria_compute_audio(auria_data *gd)
     
     gd->pd.p[0] = 2 * gd->posX - 1;
     gd->pd.p[1] = 2 * gd->posY - 1;
+    
 
     /*TODO: refactor */
     if(gd->posX > 1) gd->posX = 1;
@@ -122,6 +123,10 @@ int auria_compute_audio(auria_data *gd)
         gd->posX = (float)(gd->wtpos) / gd->wav->size;
         gd->wtpos++; 
 
+    }
+
+    if(gd->pd.p[3] == 1) {
+        gd->please_draw_circ = 1;
     }
 
 
