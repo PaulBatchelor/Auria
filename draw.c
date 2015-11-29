@@ -82,6 +82,62 @@ static int get_projection_coefs(auria_data *gd,
     return 0;
 }
 
+static int draw_line(auria_data *gd, GLdouble fX, GLdouble fY) 
+{
+    unsigned int offset = gd->offset;
+    uint32_t n;
+    int index;
+    glLineWidth(3.0);
+    glColor3f(0, 0.5 , 1);
+    uint32_t nbars = gd->nbars;
+
+    glBegin(GL_LINE_STRIP);
+    float x, y;
+    auria_cor *cor = NULL;
+    auria_stack_init(&gd->circle_stack);
+    for(n = 0; n < nbars; n++){
+        index = (gd->total_bars - n + offset - 1) % gd->total_bars;
+        cor = &gd->line[index];
+        x = cor->x;
+        y = cor->y;
+
+        if(gd->line[index].draw_circ == 1) {
+            auria_stack_push(&gd->circle_stack, cor);
+        }
+
+        //pos1 = 2 * (((n) * barwidth) / w) - 1;
+        //pos1 = (fX1 * pos1) / fX2;
+        //pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
+        //pos2 = (fX1 * pos2) / fX2;
+        
+        glVertex2f(fX * (2 * x - 1), 
+                fY * (2 * y - 1));
+
+
+    }
+    glEnd();
+    return 0;
+}
+
+static void draw_ball(auria_data *gd, 
+        float size, float pX, float pY,
+        GLdouble fX, GLdouble fY) 
+{
+    uint32_t n;
+
+    int npoints = 256;
+    float incr = 2 * M_PI / (npoints - 1);
+
+    glColor3f(0.5607, 0.996, 0.0353);
+    
+    glBegin(GL_TRIANGLE_FAN);
+        for(n = 0; n < npoints; n++) {
+            glVertex2f(pX + size * cos(n * incr), 
+                    pY + (size * sin(n * incr)));
+        }
+    glEnd();
+
+}
 
 int auria_draw(auria_data *gd)
 {
@@ -93,17 +149,16 @@ int auria_draw(auria_data *gd)
     
     get_projection_coefs(gd, &fX1, &fX2, &fY1, &fY2, &fZ1, &fZ2);
     
-    int npoints = 256;
-    float incr = 2 * M_PI / (npoints - 1);
-    float size = 0.1 + 0.3 * gd->level;
     float pY;
 
+    float size = 0.1 + 0.3 * gd->level;
     if(gd->state_Y == 1) {
         pY = 2 + fY2 * 2 * (gd->posY) + size * 0.5;
     } else {
         pY = 0;
     }
     float pX = fX2 * (1 - 2 * gd->posX);
+    
     if(gd->mode == AURIA_FREEZE) {
         uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->nbars- 1))) % (gd->total_bars);
         pX = fX1 * (2 * gd->line[index].x - 1);
@@ -120,56 +175,19 @@ int auria_draw(auria_data *gd)
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     /* Draw the ball */
+    draw_ball(gd, size, pX, pY, fX2, fY2);
 
-    glColor3f(0.5607, 0.996, 0.0353);
-    
-    glBegin(GL_TRIANGLE_FAN);
-        for(n = 0; n < npoints; n++) {
-            glVertex2f(pX + size * cos(n * incr), 
-                    pY + (size * sin(n * incr)));
-        }
-    glEnd();
+    //GLfloat pos1 = 0;
+    //GLfloat pos2 = 0;
+    //float w = gd->w;
+    //float barwidth = w / gd->total_bars;
 
-    GLfloat pos1 = 0;
-    GLfloat pos2 = 0;
-    float w = gd->w;
-    float barwidth = w / gd->total_bars;
-    unsigned int offset = gd->offset;
-    int index;
-    glLineWidth(3.0);
-    glColor3f(0, 0.5 , 1);
-    uint32_t nbars = gd->nbars;
-    glBegin(GL_LINE_STRIP);
-    float x, y;
-
-    auria_cor *cor = NULL;
-    auria_stack_init(&gd->circle_stack);
-    for(n = 0; n < nbars; n++){
-        index = (gd->total_bars - n + offset - 1) % gd->total_bars;
-        cor = &gd->line[index];
-        x = cor->x;
-        y = cor->y;
-
-        if(gd->line[index].draw_circ == 1) {
-            auria_stack_push(&gd->circle_stack, cor);
-        }
-
-        pos1 = 2 * (((n) * barwidth) / w) - 1;
-        pos1 = (fX1 * pos1) / fX2;
-        pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
-        pos2 = (fX1 * pos2) / fX2;
-        
-        glVertex2f(fX1 * (2 * x - 1), 
-                fY2 * (2 * y - 1));
-
-
-    }
-    glEnd();
-  
+    draw_line(gd, fX1, fY2);  
 
     /* draw square ticks TODO: put in another function */ 
 
     draw_ticks(gd, fX1, fY2);
+    auria_cor *cor;
     if(gd->drawline == 1) {
         int please_draw_circ = gd->please_draw_circ;
         cor = &gd->line[gd->offset];
