@@ -14,22 +14,14 @@ int auria_init(auria_data *gd, char *filename)
     gd->offset = 0;
     gd->total_bars = 500;
     gd->mode = AURIA_FREEZE;
-    gd->soundbars = (float *)malloc(sizeof(float) * gd->total_bars);
     auria_init_audio(gd, filename);
     gd->counter = 0;
     gd->counter_speed = (unsigned int) gd->wav->size / gd->total_bars;
     gd->mincer_offset = 0;
     gd->wtpos = 0;
-    gd->sum = 0;
 
     unsigned int n;
     unsigned int skip = gd->wav->size / gd->total_bars;
-
-    for(n = 0; n < gd->total_bars; n++) {
-        gd->soundbars[n] = gd->wav->tbl[n * skip];
-    }
-
-    gd->soundbars[0] = 1;
 
     /* init crossfade. TODO: refactor */
     gd->cf.pos = 1;
@@ -68,5 +60,8 @@ int auria_init(auria_data *gd, char *filename)
     gd->bar_dur = 0;
 
     auria_stack_create(&gd->circle_stack, AURIA_STACK_SIZE);
+
+    auria_stack_create(&gd->line_fifo, gd->sp->sr * AURIA_BUFSIZE);
+    gd->wrap = 0;
     return 0;
 }

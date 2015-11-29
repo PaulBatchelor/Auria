@@ -90,7 +90,6 @@ int auria_switch(auria_data *ad)
         ad->mincer_offset = 0;
         ad->tbl_pos = 0;
         ad->counter = 0;
-        ad->sum = 0;
         ad->drawline = 0;
     }
     return 0;

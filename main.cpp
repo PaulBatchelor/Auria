@@ -179,7 +179,7 @@ static void initGfx()
     /* set the window postion */
     glutInitWindowPosition( 100, 100 );
     /* create the window */
-    glutCreateWindow( "simple" );
+    glutCreateWindow( "Auria" );
    
     /* set the idle function - called when idle */
     glutIdleFunc( idleFunc );
@@ -208,10 +208,10 @@ int auria_destroy(auria_data *gd)
     stop_audio();
     auria_destroy_audio(gd);
     f310_stop(&gd->fd);
-    free(gd->soundbars);
     free(gd->line);
     free(gd->tmp_line);
     auria_stack_destroy(&gd->circle_stack);
+    auria_stack_destroy(&gd->line_fifo);
     return 0;
 }
 

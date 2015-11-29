@@ -131,7 +131,7 @@ int auria_compute_audio(auria_data *gd)
 
 
     if(mode == AURIA_SCROLL) {
-        gd->sum += fabs(out); 
+        //gd->sum += fabs(out); 
         if(gd->counter == 0) {
             //auria_cor *cor = &gd->line[gd->offset];
             //cor->x = gd->posX;
@@ -141,8 +141,8 @@ int auria_compute_audio(auria_data *gd)
             //    gd->line_offset = (gd->line_offset + 1) % gd->total_bars;
             //}
             //gd->offset = (gd->offset + 1) % gd->total_bars;
-            gd->soundbars[(gd->offset + (gd->total_bars -1)) % gd->total_bars] = (float) gd->sum / gd->counter_speed;
-            gd->sum = 0;
+            //gd->soundbars[(gd->offset + (gd->total_bars -1)) % gd->total_bars] = (float) gd->sum / gd->counter_speed;
+            //gd->sum = 0;
             //gd->dur++;
             //gd->dur = min(gd->dur, gd->total_bars - 1);
             gd->drawline = 1;

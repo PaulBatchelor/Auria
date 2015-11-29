@@ -33,7 +33,8 @@ typedef struct {
 typedef struct {
     auria_cor *stack;
     unsigned int pos;
-    
+    size_t size; 
+
     /* FIFO stack operations */
     unsigned int len;
     unsigned int offset;
@@ -56,8 +57,6 @@ typedef struct {
     float posX, posY;
     float onedsr;
     unsigned int offset;
-    float *soundbars;
-    float sum;
     /* total number of bars */
     unsigned int total_bars;
     /* number of bars to draw */
@@ -96,6 +95,8 @@ typedef struct {
     int please_draw_circ;
 
     auria_stack circle_stack;
+    auria_stack line_fifo;
+    int wrap_mode;
 }auria_data;
 
 int auria_draw(auria_data *gd);
@@ -128,9 +129,10 @@ unsigned int auria_stack_get_size(auria_stack *stack);
 int auria_stack_pop(auria_stack *stack, auria_cor **cor);
 
 /* fifo operations */
+int auria_fifo_shift(auria_stack *stack);
 int auria_fifo_init(auria_stack *stack);
 int auria_fifo_push(auria_stack *stack, auria_cor *cor);
-int auria_fifo_return(auria_stack *stack, auria_cor **cor, uint32_t index);
+int auria_fifo_return(auria_stack *stack, auria_cor **cor, unsigned int index);
 unsigned int auria_fifo_get_len(auria_stack *stack);
 
 #ifdef __cplusplus

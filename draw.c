@@ -105,11 +105,6 @@ static int draw_line(auria_data *gd, GLdouble fX, GLdouble fY)
             auria_stack_push(&gd->circle_stack, cor);
         }
 
-        //pos1 = 2 * (((n) * barwidth) / w) - 1;
-        //pos1 = (fX1 * pos1) / fX2;
-        //pos2 = 2 * (((n + 1) * barwidth) / w) - 1;
-        //pos2 = (fX1 * pos2) / fX2;
-        
         glVertex2f(fX * (2 * x - 1), 
                 fY * (2 * y - 1));
 
@@ -169,8 +164,6 @@ static int add_new_point(auria_data *gd)
 int auria_draw(auria_data *gd)
 {
 
-    int n;
-    //uint32_t skip = gd->wav->size / gd->w;
     GLdouble fX1, fY1, fZ1;
     GLdouble fX2, fY2, fZ2;
     
