@@ -12,21 +12,21 @@ int auria_init(auria_data *gd, char *filename)
     gd->posX = 1;
     gd->level = 0;
     gd->offset = 0;
-    gd->nbars = 500;
+    gd->total_bars = 500;
     gd->mode = AURIA_FREEZE;
-    gd->soundbars = (float *)malloc(sizeof(float) * gd->nbars);
+    gd->soundbars = (float *)malloc(sizeof(float) * gd->total_bars);
     auria_init_audio(gd, filename);
     gd->counter = 0;
-    gd->counter_speed = (unsigned int) gd->wav->size / gd->nbars;
+    gd->counter_speed = (unsigned int) gd->wav->size / gd->total_bars;
     gd->mincer_offset = 0;
     gd->wtpos = 0;
     gd->sum = 0;
 
     unsigned int n;
-    unsigned int skip = gd->wav->size / gd->nbars;
+    unsigned int skip = gd->wav->size / gd->total_bars;
     SPFLOAT out = 0;
 
-    for(n = 0; n < gd->nbars; n++) {
+    for(n = 0; n < gd->total_bars; n++) {
         gd->soundbars[n] = gd->wav->tbl[n * skip];
     }
 
@@ -46,18 +46,18 @@ int auria_init(auria_data *gd, char *filename)
     gd->run = 1;
 
     /* init linebuf */
-    gd->line = (auria_cor *)malloc(sizeof(auria_cor) * gd->nbars);
-    gd->tmp_line = (auria_cor *)malloc(sizeof(auria_cor) * gd->nbars);
+    gd->line = (auria_cor *)malloc(sizeof(auria_cor) * gd->total_bars);
+    gd->tmp_line = (auria_cor *)malloc(sizeof(auria_cor) * gd->total_bars);
 
     /* for testing purposes, assign random XY values */ 
 
-    for(n = 0; n < gd->nbars; n++) {
-        gd->line[n].x = (float)n/gd->nbars;
-        gd->line[n].y = (float)n/gd->nbars;
+    for(n = 0; n < gd->total_bars; n++) {
+        gd->line[n].x = (float)n/gd->total_bars;
+        gd->line[n].y = (float)n/gd->total_bars;
         gd->line[n].amp = 1;
         gd->line[n].draw_circ = 0;
     }
-    gd->dur = 0;
+    gd->nbars = 0;
     gd->size_s = 0;
     gd->line_offset = 0;
     gd->tbl_pos = 0;
@@ -65,5 +65,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->drawline = 0;
 
     gd->please_draw_circ = 0;
+
+    gd->bar_dur = 0;
     return 0;
 }

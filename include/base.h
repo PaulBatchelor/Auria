@@ -7,6 +7,8 @@ extern "C" {
 #endif
 #include "f310.h"
 
+#define AURIA_BUFSIZE 10
+
 #define AURIA_STACK_SIZE 32
 
 enum {
@@ -52,7 +54,12 @@ typedef struct {
     unsigned int offset;
     float *soundbars;
     float sum;
+    /* total number of bars */
+    unsigned int total_bars;
+    /* number of bars to draw */
     unsigned int nbars;
+    /* duration in bar units */
+    unsigned int bar_dur;
     unsigned int counter;
     unsigned int counter_speed;
     int mode;
@@ -76,7 +83,6 @@ typedef struct {
     /* Line buffer */
     auria_cor *line;
     auria_cor *tmp_line;
-    uint32_t dur;
     /* length of audio chunk in samples */
     uint32_t size_s;
     uint32_t line_offset;

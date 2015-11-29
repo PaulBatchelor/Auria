@@ -53,7 +53,7 @@ int auria_draw(auria_data *gd)
     }
     float pX = fX2 * (1 - 2 * gd->posX);
     if(gd->mode == AURIA_FREEZE) {
-        uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->dur- 1))) % (gd->nbars);
+        uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->nbars- 1))) % (gd->total_bars);
         pX = fX1 * (2 * gd->line[index].x - 1);
         pY = fY2 * (2 * gd->line[index].y - 1);
         glClearColor(
@@ -81,19 +81,19 @@ int auria_draw(auria_data *gd)
     GLfloat pos1 = 0;
     GLfloat pos2 = 0;
     float w = gd->w;
-    float barwidth = w / gd->nbars;
+    float barwidth = w / gd->total_bars;
     unsigned int offset = gd->offset;
     int index;
     glLineWidth(3.0);
     glColor3f(0, 0.5 , 1);
-    uint32_t dur = gd->dur;
+    uint32_t nbars = gd->nbars;
     glBegin(GL_LINE_STRIP);
     float x, y;
 
     auria_cor *cor = NULL;
     auria_stack_init(&gd->circle_stack);
-    for(n = 0; n < dur; n++){
-        index = (gd->nbars - n + offset - 1) % gd->nbars;
+    for(n = 0; n < nbars; n++){
+        index = (gd->total_bars - n + offset - 1) % gd->total_bars;
         cor = &gd->line[index];
         x = cor->x;
         y = cor->y;
@@ -143,7 +143,7 @@ int auria_draw(auria_data *gd)
     }
 
     if(gd->drawline == 1) {
-    int please_draw_circ = gd->please_draw_circ;
+        int please_draw_circ = gd->please_draw_circ;
         cor = &gd->line[gd->offset];
         cor->x = gd->posX;
         cor->y = gd->posY;
@@ -153,12 +153,12 @@ int auria_draw(auria_data *gd)
             cor->draw_circ = 1;
             gd->please_draw_circ = 0;
         }
-        gd->dur++;
-        gd->dur = min(gd->dur, gd->nbars);
-        gd->offset = (gd->offset + 1) % gd->nbars;
+        gd->nbars++;
+        gd->nbars = min(gd->nbars, gd->total_bars);
+        gd->offset = (gd->offset + 1) % gd->total_bars;
         gd->drawline = 0;
-        if(gd->dur >= gd->nbars) {
-            gd->line_offset = (gd->line_offset + 1) % (gd->nbars);
+        if(gd->nbars >= gd->total_bars) {
+            gd->line_offset = (gd->line_offset + 1) % (gd->total_bars);
         }
 
     }

@@ -78,11 +78,11 @@ int auria_switch(auria_data *ad)
     } else if(ad->mode == AURIA_FREEZE) {
         //ad->mode = AURIA_PLEASE_REPLAY;
         ad->mode = AURIA_SCROLL;
-        uint32_t index = (uint32_t) (ad->line_offset + floor(ad->posY * ad->dur - 1)) % ad->nbars;
+        uint32_t index = (uint32_t) (ad->line_offset + floor(ad->posY * ad->nbars- 1)) % ad->total_bars;
         ad->posX = ad->line[index].x;
         ad->posY = ad->line[index].y;
         ad->cf.pos = 0;
-        ad->dur = 0;
+        ad->nbars = 0;
         ad->offset = 0;
         ad->size_s = 0;
         ad->line_offset = 0;

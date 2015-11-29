@@ -14,7 +14,7 @@ int auria_init_audio(auria_data *gd, char *filename)
     gd->sp->sr = gd->sr;
     //printf("loading file %s\n", filename);
     //sp_ftbl_loadfile(sp, &gd->wav, filename);
-    sp_ftbl_create(sp, &gd->wav, sp->sr * 10);
+    sp_ftbl_create(sp, &gd->wav, sp->sr * AURIA_BUFSIZE);
     auria_mincer_create(&gd->mincer);
     auria_mincer_init(sp, gd->mincer, gd->wav);
     sp_port_create(&gd->portX);
@@ -138,13 +138,13 @@ int auria_compute_audio(auria_data *gd)
             //cor->y = gd->posY;
             //cor->amp = (float) gd->sum / gd->counter_speed;
             //if(gd->size_s >= gd->wav->size) {
-            //    gd->line_offset = (gd->line_offset + 1) % gd->nbars;
+            //    gd->line_offset = (gd->line_offset + 1) % gd->total_bars;
             //}
-            //gd->offset = (gd->offset + 1) % gd->nbars;
-            gd->soundbars[(gd->offset + (gd->nbars -1)) % gd->nbars] = (float) gd->sum / gd->counter_speed;
+            //gd->offset = (gd->offset + 1) % gd->total_bars;
+            gd->soundbars[(gd->offset + (gd->total_bars -1)) % gd->total_bars] = (float) gd->sum / gd->counter_speed;
             gd->sum = 0;
             //gd->dur++;
-            //gd->dur = min(gd->dur, gd->nbars - 1);
+            //gd->dur = min(gd->dur, gd->total_bars - 1);
             gd->drawline = 1;
         }
         gd->counter = (gd->counter + 1) % gd->counter_speed;
