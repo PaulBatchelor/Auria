@@ -108,7 +108,7 @@ int auria_compute_audio(auria_data *gd)
     if(mode == AURIA_SCROLL) {
         plumber_compute(&gd->pd, PLUMBER_COMPUTE);
         sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
-        uint32_t pos = (gd->size_s - gd->mincer_offset) % gd->wav->size;
+        //uint32_t pos = (gd->size_s - gd->mincer_offset) % gd->wav->size;
         gd->wav->tbl[gd->tbl_pos] 
             = sporth_out;
         out = sporth_out;

@@ -24,7 +24,6 @@ int auria_init(auria_data *gd, char *filename)
 
     unsigned int n;
     unsigned int skip = gd->wav->size / gd->total_bars;
-    SPFLOAT out = 0;
 
     for(n = 0; n < gd->total_bars; n++) {
         gd->soundbars[n] = gd->wav->tbl[n * skip];
@@ -67,5 +66,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->please_draw_circ = 0;
 
     gd->bar_dur = 0;
+
+    auria_stack_create(&gd->circle_stack, AURIA_STACK_SIZE);
     return 0;
 }

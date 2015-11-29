@@ -19,7 +19,7 @@ int auria_draw(auria_data *gd)
 {
 
     int n;
-    uint32_t skip = gd->wav->size / gd->w;
+    //uint32_t skip = gd->wav->size / gd->w;
     GLfloat depth = 0;
     GLdouble fX1, fY1, fZ1;
     GLdouble fX2, fY2, fZ2;

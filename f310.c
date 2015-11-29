@@ -9,12 +9,11 @@ static void *listen(void *ud)
 
     if(fp == NULL) {
         printf("There was a problem reading the F310 controller. Exiting gracefully...\n");
-        return;
+        return NULL;
     }
 
     signed char byte[8], type, ctl;
     int val;
-    int i;
 
     while(1){
         fread(byte, 1, 8, fp);
@@ -35,12 +34,10 @@ static void *listen(void *ud)
 
 int f310_start(f310_d *fd, void (* func)(int, int, int, void *), void *ud)
 {
-    long t = 0;
-    int rc;
     fd->run = 1;
     fd->func = func;
     fd->ud = ud;
-    rc = pthread_create(&fd->thread, NULL, listen, fd);
+    pthread_create(&fd->thread, NULL, listen, fd);
     return 0;
 }
 

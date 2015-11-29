@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdlib.h>
 #include "soundpipe.h"
 #include "sporth.h"
 #include "base.h"
@@ -43,3 +44,14 @@ int auria_stack_push(auria_stack *stack, auria_cor *cor)
     return 0;
 }
 
+int auria_stack_create(auria_stack *stack, size_t size)
+{
+    stack->stack = malloc(sizeof(auria_cor) * size);
+    return 0;
+}
+
+int auria_stack_destroy(auria_stack *stack)
+{
+    free(stack->stack);
+    return 0;
+}

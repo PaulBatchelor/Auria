@@ -211,6 +211,7 @@ int auria_destroy(auria_data *gd)
     free(gd->soundbars);
     free(gd->line);
     free(gd->tmp_line);
+    auria_stack_destroy(&gd->circle_stack);
     return 0;
 }
 

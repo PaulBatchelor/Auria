@@ -31,7 +31,7 @@ typedef struct {
 } auria_cor;
 
 typedef struct {
-    auria_cor stack[AURIA_STACK_SIZE];
+    auria_cor *stack;
     unsigned int pos;
 } auria_stack;
 
@@ -113,6 +113,9 @@ int auria_switch(auria_data *ad);
 int auria_toggle_pitch(auria_data *ad);
 
 /* stack operations */
+
+int auria_stack_create(auria_stack *stack, size_t size);
+int auria_stack_destroy(auria_stack *stack);
 
 int auria_stack_init(auria_stack *stack);
 

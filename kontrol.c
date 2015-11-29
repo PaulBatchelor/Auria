@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "soundpipe.h"
 #include "sporth.h"
@@ -92,6 +93,7 @@ int auria_switch(auria_data *ad)
         ad->sum = 0;
         ad->drawline = 0;
     }
+    return 0;
 }
 
 int auria_toggle_pitch(auria_data *ad) {
