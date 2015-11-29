@@ -15,31 +15,83 @@
 
 #define min(a, b) (a < b) ? a : b
 
-int auria_draw(auria_data *gd)
+static int draw_ticks(auria_data *gd, float fX, float fY) 
 {
+    uint32_t n;
+    auria_cor *cor;
+    float x1, x2, y1, y2;
+    float size;
+    unsigned int stack_size = (uint32_t)auria_stack_get_size(&gd->circle_stack);
 
-    int n;
-    //uint32_t skip = gd->wav->size / gd->w;
-    GLfloat depth = 0;
-    GLdouble fX1, fY1, fZ1;
-    GLdouble fX2, fY2, fZ2;
+    for(n = 0; n < stack_size; n++) {
+        cor = NULL;
+        auria_stack_pop(&gd->circle_stack, &cor);
+
+        if(cor == NULL) {
+            fprintf(stderr, "ERROR!\n");
+        }
+
+        size = 0.05;
+
+        x1 = fX * (2 * cor->x - 1) - size;
+        x2 = fX * (2 * cor->x - 1) + size;
+
+        y1 = fY * (2 * cor->y - 1) + size;
+        y2 = fY * (2 * cor->y - 1) - size;
+        
+        //x1 = fX1 * (2 * cor->x - 1) - size;
+        //x2 = fX1 * (2 * cor->x - 1) + size;
+
+        //y1 = fY2 * (2 * cor->y - 1) + size;
+        //y2 = fY2 * (2 * cor->y - 1) - size;
+
+        glBegin(GL_TRIANGLE_FAN);
+            glVertex2f(x1, y1);
+            glVertex2f(x1, y2);
+            glVertex2f(x2, y2);
+            glVertex2f(x2, y1);
+        glEnd();
+    }
+
+    return 0;
+}
+
+static int get_projection_coefs(auria_data *gd, 
+        GLdouble *fX1, GLdouble *fX2,
+        GLdouble *fY1, GLdouble *fY2,
+        GLdouble *fZ1, GLdouble *fZ2
+        )
+{
     GLdouble  model[16], proj[16];
     GLint view[4];
-    
+    GLfloat depth = 0;
+
     glReadPixels(gd->w, gd->h, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     glMatrixMode (GL_MODELVIEW);
     glGetDoublev(GL_MODELVIEW_MATRIX, model);
     glGetDoublev(GL_PROJECTION_MATRIX, proj);
     glGetIntegerv(GL_VIEWPORT, view);
-    gluUnProject(gd->w, gd->h, 0.8182, model, proj, view, &fX1, &fY1, &fZ1);
+    gluUnProject(gd->w, gd->h, 0.8182, model, proj, view, fX1, fY1, fZ1);
     
     glReadPixels(0, 0, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     glMatrixMode (GL_MODELVIEW);
     glGetDoublev(GL_MODELVIEW_MATRIX, model);
     glGetDoublev(GL_PROJECTION_MATRIX, proj);
     glGetIntegerv(GL_VIEWPORT, view);
-    gluUnProject(0, 0, 0.8182, model, proj, view, &fX2, &fY2, &fZ2);
+    gluUnProject(0, 0, 0.8182, model, proj, view, fX2, fY2, fZ2);
+    return 0;
+}
 
+
+int auria_draw(auria_data *gd)
+{
+
+    int n;
+    //uint32_t skip = gd->wav->size / gd->w;
+    GLdouble fX1, fY1, fZ1;
+    GLdouble fX2, fY2, fZ2;
+    
+    get_projection_coefs(gd, &fX1, &fX2, &fY1, &fY2, &fZ1, &fZ2);
     
     int npoints = 256;
     float incr = 2 * M_PI / (npoints - 1);
@@ -113,35 +165,11 @@ int auria_draw(auria_data *gd)
 
     }
     glEnd();
-   
-    float x1, x2, y1, y2;
+  
 
-    unsigned int stack_size = (uint32_t)auria_stack_get_size(&gd->circle_stack);
+    /* draw square ticks TODO: put in another function */ 
 
-    for(n = 0; n < stack_size; n++) {
-        cor = NULL;
-        auria_stack_pop(&gd->circle_stack, &cor);
-
-        if(cor == NULL) {
-            fprintf(stderr, "ERROR!\n");
-        }
-
-        size = 0.05;
-
-        x1 = fX1 * (2 * cor->x - 1) - size;
-        x2 = fX1 * (2 * cor->x - 1) + size;
-
-        y1 = fY2 * (2 * cor->y - 1) + size;
-        y2 = fY2 * (2 * cor->y - 1) - size;
-
-        glBegin(GL_TRIANGLE_FAN);
-            glVertex2f(x1, y1);
-            glVertex2f(x1, y2);
-            glVertex2f(x2, y2);
-            glVertex2f(x2, y1);
-        glEnd();
-    }
-
+    draw_ticks(gd, fX1, fY2);
     if(gd->drawline == 1) {
         int please_draw_circ = gd->please_draw_circ;
         cor = &gd->line[gd->offset];
@@ -162,7 +190,8 @@ int auria_draw(auria_data *gd)
         }
 
     }
-    
+   
+
     glutSwapBuffers( );
     glFlush( );
     return 0;

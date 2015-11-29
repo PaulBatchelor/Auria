@@ -33,6 +33,10 @@ typedef struct {
 typedef struct {
     auria_cor *stack;
     unsigned int pos;
+    
+    /* FIFO stack operations */
+    unsigned int len;
+    unsigned int offset;
 } auria_stack;
 
 typedef struct {
@@ -112,16 +116,22 @@ void auria_kontrol(int type, int ctl, int val, void *ud);
 int auria_switch(auria_data *ad);
 int auria_toggle_pitch(auria_data *ad);
 
-/* stack operations */
 
+/* create/destroy for fifo AND stack */
 int auria_stack_create(auria_stack *stack, size_t size);
 int auria_stack_destroy(auria_stack *stack);
 
+/* stack operations */
 int auria_stack_init(auria_stack *stack);
-
 int auria_stack_push(auria_stack *stack, auria_cor *cor);
 unsigned int auria_stack_get_size(auria_stack *stack);
 int auria_stack_pop(auria_stack *stack, auria_cor **cor);
+
+/* fifo operations */
+int auria_fifo_init(auria_stack *stack);
+int auria_fifo_push(auria_stack *stack, auria_cor *cor);
+int auria_fifo_return(auria_stack *stack, auria_cor **cor, uint32_t index);
+unsigned int auria_fifo_get_len(auria_stack *stack);
 
 #ifdef __cplusplus
 }
