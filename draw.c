@@ -139,6 +139,33 @@ static void draw_ball(auria_data *gd,
 
 }
 
+static int add_new_point(auria_data *gd)
+{
+    auria_cor *cor;
+
+    if(gd->drawline == 1) {
+        int please_draw_circ = gd->please_draw_circ;
+        cor = &gd->line[gd->offset];
+        cor->x = gd->posX;
+        cor->y = gd->posY;
+        cor->amp = gd->pd.p[2];
+        cor->draw_circ = 0;
+        if(please_draw_circ == 1) {
+            cor->draw_circ = 1;
+            gd->please_draw_circ = 0;
+        }
+        gd->nbars++;
+        gd->nbars = min(gd->nbars, gd->total_bars);
+        gd->offset = (gd->offset + 1) % gd->total_bars;
+        gd->drawline = 0;
+        if(gd->nbars >= gd->total_bars) {
+            gd->line_offset = (gd->line_offset + 1) % (gd->total_bars);
+        }
+
+    }
+    return 0;
+}
+
 int auria_draw(auria_data *gd)
 {
 
@@ -174,42 +201,14 @@ int auria_draw(auria_data *gd)
 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    /* Draw the ball */
     draw_ball(gd, size, pX, pY, fX2, fY2);
-
-    //GLfloat pos1 = 0;
-    //GLfloat pos2 = 0;
-    //float w = gd->w;
-    //float barwidth = w / gd->total_bars;
 
     draw_line(gd, fX1, fY2);  
 
-    /* draw square ticks TODO: put in another function */ 
-
     draw_ticks(gd, fX1, fY2);
-    auria_cor *cor;
-    if(gd->drawline == 1) {
-        int please_draw_circ = gd->please_draw_circ;
-        cor = &gd->line[gd->offset];
-        cor->x = gd->posX;
-        cor->y = gd->posY;
-        cor->amp = gd->pd.p[2];
-        cor->draw_circ = 0;
-        if(please_draw_circ == 1) {
-            cor->draw_circ = 1;
-            gd->please_draw_circ = 0;
-        }
-        gd->nbars++;
-        gd->nbars = min(gd->nbars, gd->total_bars);
-        gd->offset = (gd->offset + 1) % gd->total_bars;
-        gd->drawline = 0;
-        if(gd->nbars >= gd->total_bars) {
-            gd->line_offset = (gd->line_offset + 1) % (gd->total_bars);
-        }
-
-    }
    
-
+    add_new_point(gd); 
+   
     glutSwapBuffers( );
     glFlush( );
     return 0;
