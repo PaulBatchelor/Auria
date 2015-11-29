@@ -62,6 +62,6 @@ int auria_init(auria_data *gd, char *filename)
     auria_stack_create(&gd->circle_stack, AURIA_STACK_SIZE);
 
     auria_stack_create(&gd->line_fifo, gd->sp->sr * AURIA_BUFSIZE);
-    gd->wrap = 0;
+    gd->wrap_mode = 0;
     return 0;
 }

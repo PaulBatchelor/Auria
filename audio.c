@@ -151,6 +151,7 @@ int auria_compute_audio(auria_data *gd)
 
         gd->size_s = min((gd->size_s + 1), gd->wav->size);
         if(gd->size_s >= gd->wav->size) {
+            gd->wrap_mode = 1;
             gd->mincer_offset = (gd->mincer_offset + 1) % gd->wav->size;
         }
         gd->tbl_pos = (gd->tbl_pos + 1) % gd->wav->size;

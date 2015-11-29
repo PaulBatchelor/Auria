@@ -60,11 +60,6 @@ int auria_stack_destroy(auria_stack *stack)
     return 0;
 }
 
-int auria_fifo_init(auria_stack *stack)
-{
-    return 0;
-}
-
 int auria_fifo_push(auria_stack *stack, auria_cor *cor)
 {
 
@@ -97,5 +92,13 @@ unsigned int auria_fifo_get_len(auria_stack *stack)
 int auria_fifo_shift(auria_stack *stack)
 {
     stack->offset = (stack->offset + 1) % stack->size;
+    /* found this was needed */
+    stack->len--;
+    return 0;
+}
+int auria_fifo_init(auria_stack *stack)
+{
+    stack->offset = 0;
+    stack->len = 0;
     return 0;
 }

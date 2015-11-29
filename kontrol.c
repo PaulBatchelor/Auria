@@ -72,7 +72,6 @@ int auria_switch(auria_data *ad)
         ad->cf.pos = 0;
     } else if (ad->mode == AURIA_SCROLL) {
         ad->mode = AURIA_PLEASE_FREEZE;
-        printf("size is %d line offset is %d\n", ad->size_s, ad->line_offset);
         ad->mincer->size = ad->size_s;
         ad->posY = 1;
         ad->drawline = 0;
@@ -91,6 +90,8 @@ int auria_switch(auria_data *ad)
         ad->tbl_pos = 0;
         ad->counter = 0;
         ad->drawline = 0;
+        ad->wrap_mode = 0;
+        auria_fifo_init(&ad->line_fifo);
     }
     return 0;
 }
@@ -106,7 +107,7 @@ static float joy_to_float(int val)
     if(abs(val) > 1050) {
         float speed = (2 * ((float)(val + 32767) / 65278) - 1);
         /*TODO make this constant based on samplerate */
-        return speed * 0.00001;
+        return speed * 0.000015;
     } else {
         return 0;
     }

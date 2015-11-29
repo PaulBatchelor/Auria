@@ -114,6 +114,38 @@ static int draw_line(auria_data *gd, GLdouble fX, GLdouble fY)
     return 0;
 }
 
+/* FIFO draw line */
+
+static int draw_line2(auria_data *gd, GLdouble fX, GLdouble fY) 
+{
+    unsigned int offset = gd->offset;
+    uint32_t n;
+    int index;
+    glLineWidth(3.0);
+    glColor3f(0, 0.5 , 1);
+    uint32_t len = auria_fifo_get_len(&gd->line_fifo);
+
+    glBegin(GL_LINE_STRIP);
+    float x, y;
+    auria_cor *cor = NULL;
+    auria_stack_init(&gd->circle_stack);
+    for(n = 0; n < len; n++){
+        auria_fifo_return(&gd->line_fifo, &cor, n);
+
+        x = cor->x;
+        y = cor->y;
+
+        if(cor->draw_circ == 1) {
+            auria_stack_push(&gd->circle_stack, cor);
+        }
+
+        glVertex2f(fX * (2 * x - 1), 
+                fY * (2 * y - 1));
+    }
+    glEnd();
+    return 0;
+}
+
 static void draw_ball(auria_data *gd, 
         float size, float pX, float pY,
         GLdouble fX, GLdouble fY) 
@@ -132,6 +164,37 @@ static void draw_ball(auria_data *gd,
         }
     glEnd();
 
+}
+
+static int add_new_point2(auria_data *gd)
+{
+    if(gd->mode == AURIA_SCROLL) {
+        auria_cor cor;
+
+        int please_draw_circ = gd->please_draw_circ;
+        //cor = &gd->line[gd->offset];
+        cor.x = gd->posX;
+        cor.y = gd->posY;
+        cor.amp = gd->pd.p[2];
+        cor.draw_circ = 0;
+        if(please_draw_circ == 1) {
+            cor.draw_circ = 1;
+            gd->please_draw_circ = 0;
+        }
+
+        if(gd->wrap_mode) {
+            auria_fifo_shift(&gd->line_fifo);
+        }
+        auria_fifo_push(&gd->line_fifo, &cor);
+
+        ///*TODO make this work */ 
+        //if(gd->nbars >= gd->total_bars) {
+        //    gd->line_offset = (gd->line_offset + 1) % auria_fifo_get_len(&gd->line_fifo);
+        //    //gd->line_offset = (gd->line_offset + 1) % gd->line_fifo.size;
+        //}
+    }
+
+    return 0;
 }
 
 static int add_new_point(auria_data *gd)
@@ -161,9 +224,28 @@ static int add_new_point(auria_data *gd)
     return 0;
 }
 
+static int get_position(auria_data *gd, uint32_t index, float *pX, float *pY,
+        GLdouble fX, GLdouble fY)
+{
+    //uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->nbars- 1))) % (gd->total_bars);
+    *pX = fX * (2 * gd->line[index].x - 1);
+    *pY = fY * (2 * gd->line[index].y - 1);
+    return 0;
+}
+
+static int get_position2(auria_data *gd, uint32_t index, float *pX, float *pY,
+        GLdouble fX, GLdouble fY)
+{
+    //uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->nbars- 1))) % (gd->total_bars);
+    auria_cor *cor=NULL;
+    auria_fifo_return(&gd->line_fifo, &cor, index);
+    *pX = fX * (2 * cor->x - 1);
+    *pY = fY * (2 * cor->y - 1);
+    return 0;
+}
+
 int auria_draw(auria_data *gd)
 {
-
     GLdouble fX1, fY1, fZ1;
     GLdouble fX2, fY2, fZ2;
     
@@ -180,14 +262,24 @@ int auria_draw(auria_data *gd)
     float pX = fX2 * (1 - 2 * gd->posX);
     
     if(gd->mode == AURIA_FREEZE) {
-        uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->nbars- 1))) % (gd->total_bars);
-        pX = fX1 * (2 * gd->line[index].x - 1);
-        pY = fY2 * (2 * gd->line[index].y - 1);
+        //uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->nbars- 1))) % (gd->total_bars);
+        uint32_t index = floor(gd->posY * (auria_fifo_get_len(&gd->line_fifo) - 1));
+        //pX = fX1 * (2 * gd->line[index].x - 1);
+        //pY = fY2 * (2 * gd->line[index].y - 1);
+        get_position2(gd, index, &pX, &pY, fX1, fY2);
+        auria_cor *cor = NULL;
+        auria_fifo_return(&gd->line_fifo, &cor, index);
         glClearColor(
-                1 * gd->line[index].amp, 
-                1 * gd->line[index].amp, 
-                1 * gd->line[index].amp, 
+                1 * cor->amp, 
+                1 * cor->amp, 
+                1 * cor->amp, 
                 1);
+
+        //glClearColor(
+        //        1 * gd->line[index].amp, 
+        //        1 * gd->line[index].amp, 
+        //        1 * gd->line[index].amp, 
+        //        1);
     } else {
         glClearColor(1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 );
     }
@@ -196,11 +288,11 @@ int auria_draw(auria_data *gd)
 
     draw_ball(gd, size, pX, pY, fX2, fY2);
 
-    draw_line(gd, fX1, fY2);  
+    draw_line2(gd, fX1, fY2);  
 
     draw_ticks(gd, fX1, fY2);
    
-    add_new_point(gd); 
+    add_new_point2(gd); 
    
     glutSwapBuffers( );
     glFlush( );
