@@ -59,6 +59,7 @@ static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFram
 
     for( int i = 0; i < numFrames * MY_CHANNELS; i+=2 )
     {
+        gd->pd.p[5] = input[i];
         auria_compute_audio(gd);
         output[i] = gd->sp->out[0];
         output[i + 1] = gd->sp->out[1];
@@ -245,7 +246,7 @@ int main_loop(int argc, char **argv)
     
     RtAudio::StreamParameters iParams, oParams;
     iParams.deviceId = audio.getDefaultInputDevice();
-    iParams.nChannels = 1;
+    iParams.nChannels = 2;
     iParams.firstChannel = 0;
     oParams.deviceId = audio.getDefaultOutputDevice();
     oParams.nChannels = MY_CHANNELS;
@@ -256,7 +257,7 @@ int main_loop(int argc, char **argv)
    
     try {
         //audio.openStream( &oParams, &iParams, MY_FORMAT, MY_SRATE, &bufferFrames, &callme, &g_data, &options );
-        audio.openStream( &oParams, NULL, MY_FORMAT, MY_SRATE, &bufferFrames, &callme, &g_data, &options );
+        audio.openStream( &oParams, &iParams, MY_FORMAT, MY_SRATE, &bufferFrames, &callme, &g_data, &options );
     }
     catch( RtError& e )
     {
