@@ -1,3 +1,10 @@
+# P field guide
+# p 0 returns x cordinate (-1, 1 range)
+# p 1 returns y cordinate (-1, 1 range)
+# p 2 sets the background shade (0-1 range, 0 = black, 1 = white)
+# p 3 will create a tick on a line when sent a trigger
+# p 4 returns a tick created by the left button trigger
+
 'tbl' '10 62' gen_vals
 'stk' '0 0' gen_vals
 'seq' '60 63 74 70 60 63 70 68 79' gen_vals
@@ -24,5 +31,3 @@ dup dup 0.97 8000 revsc drop 0.4 * +
 
 4 p 0.01 0 0.8 tenv 0.3 * 
 0 'stk' tget 0.5 0 2 tenv + 2 pset
-
-
