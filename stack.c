@@ -36,8 +36,8 @@ int auria_stack_push(auria_stack *stack, auria_cor *cor)
     /* Current position == next index because 1-index */
     unsigned int pos =  stack->pos;
     stack->pos++;
-    stack->stack[pos].x = cor->x;
-    stack->stack[pos].y = cor->y;
+    stack->stack[pos].pt.x = cor->pt.x;
+    stack->stack[pos].pt.y = cor->pt.y;
     stack->stack[pos].draw_circ = cor->draw_circ;
     stack->stack[pos].amp = cor->amp;
 
@@ -70,8 +70,8 @@ int auria_fifo_push(auria_stack *stack, auria_cor *cor)
     unsigned int wrapped_index = (stack->offset + stack->len) % stack->size;
     stack->len++;
     
-    stack->stack[wrapped_index].x = cor->x;
-    stack->stack[wrapped_index].y = cor->y;
+    stack->stack[wrapped_index].pt.x = cor->pt.x;
+    stack->stack[wrapped_index].pt.y = cor->pt.y;
     stack->stack[wrapped_index].amp = cor->amp;
     stack->stack[wrapped_index].draw_circ= cor->draw_circ;
 

@@ -7,6 +7,9 @@
 
 static float joy_to_float(int val);
 
+static int hold(auria_data *ad, int val);
+
+
 void auria_kontrol(int type, int ctl, int val, void *ud)
 {
     //if(type == 1) {
@@ -45,7 +48,11 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 break;
             case BUT_B: 
                 printf("but_b %d\n", val); 
-                if(val == 1) auria_toggle_pitch(ad);
+                //if(val == 1) auria_toggle_pitch(ad);
+                break;
+            case BUT_RB:
+                printf("but_rb %d\n", val); 
+                hold(ad, val);
                 break;
             default: break;
         }
@@ -79,8 +86,8 @@ int auria_switch(auria_data *ad)
         //ad->mode = AURIA_PLEASE_REPLAY;
         ad->mode = AURIA_SCROLL;
         uint32_t index = (uint32_t) (ad->line_offset + floor(ad->posY * ad->nbars- 1)) % ad->total_bars;
-        ad->posX = ad->line[index].x;
-        ad->posY = ad->line[index].y;
+        ad->posX = ad->line[index].pt.x;
+        ad->posY = ad->line[index].pt.y;
         ad->cf.pos = 0;
         ad->nbars = 0;
         ad->offset = 0;
@@ -91,7 +98,12 @@ int auria_switch(auria_data *ad)
         ad->counter = 0;
         ad->drawline = 0;
         ad->wrap_mode = 0;
+        /* reset line fifo */
         auria_fifo_init(&ad->line_fifo);
+        /* reset ghosting stack */
+        ad->ghosts.last = 0;
+        ad->ghosts.pos = 0;
+        ad->ghosts.len = 0;
     }
     return 0;
 }
@@ -111,4 +123,18 @@ static float joy_to_float(int val)
     } else {
         return 0;
     }
+}
+
+static int hold(auria_data *ad, int val)
+{
+    if(val == 1) {
+        ad->hold_y = ad->accY;
+        ad->hold_x = ad->accX;
+        ad->accY = 0;
+        ad->accX = 0;
+    } else {
+        ad->hold_y = 0;
+        ad->hold_x = 0;
+    }
+    return 0;
 }

@@ -33,11 +33,11 @@ static int draw_ticks(auria_data *gd, float fX, float fY)
 
         size = 0.05;
 
-        x1 = fX * (2 * cor->x - 1) - size;
-        x2 = fX * (2 * cor->x - 1) + size;
+        x1 = fX * (2 * cor->pt.x - 1) - size;
+        x2 = fX * (2 * cor->pt.x - 1) + size;
 
-        y1 = fY * (2 * cor->y - 1) + size;
-        y2 = fY * (2 * cor->y - 1) - size;
+        y1 = fY * (2 * cor->pt.y - 1) + size;
+        y2 = fY * (2 * cor->pt.y - 1) - size;
         
         //x1 = fX1 * (2 * cor->x - 1) - size;
         //x2 = fX1 * (2 * cor->x - 1) + size;
@@ -98,8 +98,8 @@ static int draw_line(auria_data *gd, GLdouble fX, GLdouble fY)
     for(n = 0; n < nbars; n++){
         index = (gd->total_bars - n + offset - 1) % gd->total_bars;
         cor = &gd->line[index];
-        x = cor->x;
-        y = cor->y;
+        x = cor->pt.x;
+        y = cor->pt.y;
 
         if(gd->line[index].draw_circ == 1) {
             auria_stack_push(&gd->circle_stack, cor);
@@ -132,8 +132,8 @@ static int draw_line2(auria_data *gd, GLdouble fX, GLdouble fY)
     for(n = 0; n < len; n++){
         auria_fifo_return(&gd->line_fifo, &cor, n);
 
-        x = cor->x;
-        y = cor->y;
+        x = cor->pt.x;
+        y = cor->pt.y;
 
         if(cor->draw_circ == 1) {
             auria_stack_push(&gd->circle_stack, cor);
@@ -150,20 +150,44 @@ static void draw_ball(auria_data *gd,
         float size, float pX, float pY,
         GLdouble fX, GLdouble fY) 
 {
-    uint32_t n;
+    uint32_t n, circ, index;
 
     int npoints = 256;
     float incr = 2 * M_PI / (npoints - 1);
 
     glColor3f(0.5607, 0.996, 0.0353);
     
-    glBegin(GL_TRIANGLE_FAN);
-        for(n = 0; n < npoints; n++) {
-            glVertex2f(pX + size * cos(n * incr), 
-                    pY + (size * sin(n * incr)));
+    
+    if(gd->mode == AURIA_FREEZE) {
+        int pos = gd->ghosts.pos;    
+        gd->ghosts.pos = (pos + 1) % AURIA_NUM_TRAILS;
+        gd->ghosts.pt[pos].x = pX;
+        gd->ghosts.pt[pos].y = pY;
+        gd->ghosts.size[pos] = size;
+        gd->ghosts.len = min(AURIA_NUM_TRAILS, gd->ghosts.len + 1);
+        gd->ghosts.last = pos;
+        index = gd->ghosts.last;
+        float opacity = 1;
+        for(circ = 0; circ < gd->ghosts.len; circ++) {
+            glColor4f(0.5607, 0.996, 0.0353, opacity);
+            glBegin(GL_TRIANGLE_FAN);
+                for(n = 0; n < npoints; n++) {
+                    glVertex2f(gd->ghosts.pt[index].x + size * cos(n * incr), 
+                            gd->ghosts.pt[index].y + (size * sin(n * incr)));
+                }
+            glEnd();
+            index = (AURIA_NUM_TRAILS + index - 1) % AURIA_NUM_TRAILS;
+            opacity *= 0.6;
         }
-    glEnd();
 
+    } else {
+        glBegin(GL_TRIANGLE_FAN);
+            for(n = 0; n < npoints; n++) {
+                glVertex2f(pX + size * cos(n * incr), 
+                        pY + (size * sin(n * incr)));
+            }
+        glEnd();
+    }
 }
 
 static int add_new_point2(auria_data *gd)
@@ -173,8 +197,8 @@ static int add_new_point2(auria_data *gd)
 
         int please_draw_circ = gd->please_draw_circ;
         //cor = &gd->line[gd->offset];
-        cor.x = gd->posX;
-        cor.y = gd->posY;
+        cor.pt.x = gd->posX;
+        cor.pt.y = gd->posY;
         cor.amp = gd->pd.p[2];
         cor.draw_circ = 0;
         if(please_draw_circ == 1) {
@@ -204,8 +228,8 @@ static int add_new_point(auria_data *gd)
     if(gd->drawline == 1) {
         int please_draw_circ = gd->please_draw_circ;
         cor = &gd->line[gd->offset];
-        cor->x = gd->posX;
-        cor->y = gd->posY;
+        cor->pt.x = gd->posX;
+        cor->pt.y = gd->posY;
         cor->amp = gd->pd.p[2];
         cor->draw_circ = 0;
         if(please_draw_circ == 1) {
@@ -228,8 +252,8 @@ static int get_position(auria_data *gd, uint32_t index, float *pX, float *pY,
         GLdouble fX, GLdouble fY)
 {
     //uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->nbars- 1))) % (gd->total_bars);
-    *pX = fX * (2 * gd->line[index].x - 1);
-    *pY = fY * (2 * gd->line[index].y - 1);
+    *pX = fX * (2 * gd->line[index].pt.x - 1);
+    *pY = fY * (2 * gd->line[index].pt.y - 1);
     return 0;
 }
 
@@ -239,13 +263,14 @@ static int get_position2(auria_data *gd, uint32_t index, float *pX, float *pY,
     //uint32_t index = (gd->line_offset - 1 + (uint32_t) floor(gd->posY * (gd->nbars- 1))) % (gd->total_bars);
     auria_cor *cor=NULL;
     auria_fifo_return(&gd->line_fifo, &cor, index);
-    *pX = fX * (2 * cor->x - 1);
-    *pY = fY * (2 * cor->y - 1);
+    *pX = fX * (2 * cor->pt.x - 1);
+    *pY = fY * (2 * cor->pt.y - 1);
     return 0;
 }
 
 int auria_draw(auria_data *gd)
 {
+    glEnable( GL_BLEND );
     GLdouble fX1, fY1, fZ1;
     GLdouble fX2, fY2, fZ2;
     
@@ -283,14 +308,17 @@ int auria_draw(auria_data *gd)
     } else {
         glClearColor(1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 );
     }
+    glBlendFunc(GL_ONE, GL_ZERO);
 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+    draw_line2(gd, fX1, fY2);  
+    draw_ticks(gd, fX1, fY2);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     draw_ball(gd, size, pX, pY, fX2, fY2);
 
-    draw_line2(gd, fX1, fY2);  
 
-    draw_ticks(gd, fX1, fY2);
    
     add_new_point2(gd); 
    

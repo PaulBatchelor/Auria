@@ -8,8 +8,8 @@ extern "C" {
 #include "f310.h"
 
 #define AURIA_BUFSIZE 10
-
 #define AURIA_STACK_SIZE 32
+#define AURIA_NUM_TRAILS 10 
 
 enum {
     AURIA_SCROLL,
@@ -26,6 +26,11 @@ typedef struct  {
 
 typedef struct {
     float x, y;
+} auria_point;
+
+typedef struct {
+    //float x, y;
+    auria_point pt;
     float amp;
     int draw_circ;
 } auria_cor;
@@ -39,6 +44,12 @@ typedef struct {
     unsigned int len;
     unsigned int offset;
 } auria_stack;
+
+typedef struct {
+    auria_point pt[AURIA_NUM_TRAILS];
+    float size[AURIA_NUM_TRAILS];
+    int pos, len, last;
+} auria_circ_stack;
 
 typedef struct {
     sp_data *sp;
@@ -94,9 +105,17 @@ typedef struct {
     int drawline;
     int please_draw_circ;
 
+    /*TODO: rename to notch stack */
     auria_stack circle_stack;
     auria_stack line_fifo;
     int wrap_mode;
+
+    /* ghost trail for circle */
+
+    auria_circ_stack ghosts;
+
+    float hold_y;
+    float hold_x;
 }auria_data;
 
 int auria_draw(auria_data *gd);

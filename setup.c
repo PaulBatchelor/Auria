@@ -36,15 +36,13 @@ int auria_init(auria_data *gd, char *filename)
 
     gd->run = 1;
 
-    /* init linebuf */
+    /* init linebuf TODO: remove linebuf*/
     gd->line = (auria_cor *)malloc(sizeof(auria_cor) * gd->total_bars);
     gd->tmp_line = (auria_cor *)malloc(sizeof(auria_cor) * gd->total_bars);
 
-    /* for testing purposes, assign random XY values */ 
-
     for(n = 0; n < gd->total_bars; n++) {
-        gd->line[n].x = (float)n/gd->total_bars;
-        gd->line[n].y = (float)n/gd->total_bars;
+        gd->line[n].pt.x = (float)n/gd->total_bars;
+        gd->line[n].pt.y = (float)n/gd->total_bars;
         gd->line[n].amp = 1;
         gd->line[n].draw_circ = 0;
     }
@@ -63,5 +61,14 @@ int auria_init(auria_data *gd, char *filename)
 
     auria_stack_create(&gd->line_fifo, gd->sp->sr * AURIA_BUFSIZE);
     gd->wrap_mode = 0;
+
+    /*circle stack setup */
+
+    gd->ghosts.pos = 0;
+    gd->ghosts.len = 0;
+    gd->ghosts.last = 0;
+
+    gd->hold_y = 0;
+    gd->hold_x = 0;
     return 0;
 }
