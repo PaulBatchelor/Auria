@@ -54,6 +54,12 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 printf("but_rb %d\n", val); 
                 hold(ad, val);
                 break;
+            case BUT_LB:
+                printf("but_lb %d\n", val); 
+                if(val == 1) {
+                    ad->please_trig_lb = 1;
+                }
+                break;
             default: break;
         }
     } else if(type == 2) {

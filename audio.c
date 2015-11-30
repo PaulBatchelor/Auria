@@ -88,6 +88,13 @@ int auria_compute_audio(auria_data *gd)
     
     gd->pd.p[0] = 2 * gd->posX - 1;
     gd->pd.p[1] = 2 * gd->posY - 1;
+
+    if(gd->please_trig_lb == 1) {
+        gd->pd.p[4] = 1;
+        gd->please_trig_lb = 0;
+    } else {
+        gd->pd.p[4] = 0;
+    }
     
 
     /*TODO: refactor */
