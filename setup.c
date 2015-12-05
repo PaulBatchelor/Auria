@@ -10,7 +10,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->state_Y = 1;
     gd->posY = 0.5;
     gd->posX = 1;
-    gd->posZ = 1;
+    gd->posZ = 0;
     gd->level = 0;
     gd->offset = 0;
     gd->total_bars = 500;
@@ -43,8 +43,8 @@ int auria_init(auria_data *gd, char *filename)
     gd->tmp_line = (auria_cor *)malloc(sizeof(auria_cor) * gd->total_bars);
 
     for(n = 0; n < gd->total_bars; n++) {
-        gd->line[n].pt.x = (float)n/gd->total_bars;
-        gd->line[n].pt.y = (float)n/gd->total_bars;
+        gd->line[n].pt.x = 0;
+        gd->line[n].pt.y = 0;
         gd->line[n].pt.z = 0;
         gd->line[n].amp = 1;
         gd->line[n].draw_circ = 0;
@@ -70,9 +70,16 @@ int auria_init(auria_data *gd, char *filename)
     gd->ghosts.pos = 0;
     gd->ghosts.len = 0;
     gd->ghosts.last = 0;
+    
+    for(n = 0; n < AURIA_NUM_TRAILS; n++) {
+        gd->ghosts.pt[n].x = 0;
+        gd->ghosts.pt[n].y = 0;
+    }
 
     gd->hold_y = 0;
     gd->hold_x = 0;
     gd->please_trig_lb = 0;
+
+    gd->rot_X = 0;
     return 0;
 }

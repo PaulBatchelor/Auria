@@ -79,6 +79,14 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 //fprintf(stderr, "%d %g\n", val, ad->accZ);
                 //}
                 break;
+            case DPAD_H: 
+                printf("dpad_h %d\n", val);
+                if(val != 0) {
+                    ad->rot_X = val;
+                } else {
+                    ad->rot_X = 0;
+                }
+                break;
             default: break;
         }
 

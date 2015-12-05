@@ -52,6 +52,13 @@ int auria_stack_create(auria_stack *stack, size_t size)
     stack->size = size;
     stack->offset = 0;
     stack->len = 0;
+    int i;
+    for(i = 0; i < (int)size; i++ ){
+        stack->stack[i].pt.x = 0.5;
+        stack->stack[i].pt.y = 0.5;
+        stack->stack[i].amp = 0;
+        stack->stack[i].draw_circ= 0;
+    }
     return 0;
 }
 

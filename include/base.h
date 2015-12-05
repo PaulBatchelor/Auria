@@ -119,6 +119,8 @@ typedef struct {
     float hold_x;
 
     int please_trig_lb;
+
+    int rot_X;
 }auria_data;
 
 int auria_draw(auria_data *gd);

@@ -320,16 +320,23 @@ int auria_draw(auria_data *gd)
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
 
-    draw_ball(gd, size, pX, pY, pZ, fX2, fY2);
+    draw_ball(gd, size, pX, pY, pZ, 10 * fX2, 10 * fY2);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     draw_line2(gd, fX1, fY2);  
     draw_ticks(gd, fX1, fY2);
 
+    
+    if(gd->rot_X > 0) {
+        glRotated(1, 0, 1, 0);
+    } else if(gd->rot_X < 0) {
+        glRotated(-1, 0, 1, 0);
+    }
+
     glBlendFunc(GL_ONE, GL_ZERO);
 
     add_new_point2(gd); 
-   
+
     glutSwapBuffers( );
     glFlush( );
     return 0;
