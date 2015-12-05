@@ -156,6 +156,7 @@ static void draw_ball(auria_data *gd,
 
     int npoints = 256;
     float incr = 2 * M_PI / (npoints - 1);
+    float eps = 0.000001;
 
     glColor3f(0.5607, 0.996, 0.0353);
     
@@ -177,7 +178,7 @@ static void draw_ball(auria_data *gd,
                 for(n = 0; n < npoints; n++) {
                     glVertex3f(gd->ghosts.pt[index].x + size * cos(n * incr), 
                             gd->ghosts.pt[index].y + (size * sin(n * incr)),
-                            gd->ghosts.pt[index].z);
+                            gd->ghosts.pt[index].z + eps);
                 }
             glEnd();
             index = (AURIA_NUM_TRAILS + index - 1) % AURIA_NUM_TRAILS;
@@ -188,7 +189,7 @@ static void draw_ball(auria_data *gd,
         glBegin(GL_TRIANGLE_FAN);
             for(n = 0; n < npoints; n++) {
                 glVertex3f(pX + size * cos(n * incr), 
-                        pY + (size * sin(n * incr)), pZ);
+                        pY + (size * sin(n * incr)), pZ + eps);
             }
         glEnd();
     }
@@ -319,13 +320,6 @@ int auria_draw(auria_data *gd)
 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
-
-    draw_ball(gd, size, pX, pY, pZ, 10 * fX2, 10 * fY2);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    draw_line2(gd, fX1, fY2);  
-    draw_ticks(gd, fX1, fY2);
-
     
     if(gd->rot_X > 0) {
         glRotated(1, 0, 1, 0);
@@ -333,6 +327,12 @@ int auria_draw(auria_data *gd)
         glRotated(-1, 0, 1, 0);
     }
 
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    draw_line2(gd, fX1, fY2);  
+    draw_ticks(gd, fX1, fY2);
+
+    draw_ball(gd, size, pX, pY, pZ, 10 * fX2, 10 * fY2);
     glBlendFunc(GL_ONE, GL_ZERO);
 
     add_new_point2(gd); 

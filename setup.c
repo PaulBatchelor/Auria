@@ -9,7 +9,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->state = 1;
     gd->state_Y = 1;
     gd->posY = 0.5;
-    gd->posX = 1;
+    gd->posX = 0.5;
     gd->posZ = 0;
     gd->level = 0;
     gd->offset = 0;
@@ -72,8 +72,8 @@ int auria_init(auria_data *gd, char *filename)
     gd->ghosts.last = 0;
     
     for(n = 0; n < AURIA_NUM_TRAILS; n++) {
-        gd->ghosts.pt[n].x = 0;
-        gd->ghosts.pt[n].y = 0;
+        gd->ghosts.pt[n].x = 0.5;
+        gd->ghosts.pt[n].y = 0.5;
     }
 
     gd->hold_y = 0;
