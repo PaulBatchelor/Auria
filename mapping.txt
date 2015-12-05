@@ -1,0 +1,29 @@
+Things to map:
+X_L joystick mapping 
+Y_L joystick mapping 
+
+X_R joystick mapping 
+Y_R joystick mapping 
+
+Ball X pos
+Ball Y pos
+Ball Z pos
+
+tick gen
+
+bgColor R
+bgColor G
+bgColor B
+
+ballColor R
+ballColor G
+ballColor B
+
+lineColor R
+lineColor G
+lineColor B
+
+left trigger
+
+
+
