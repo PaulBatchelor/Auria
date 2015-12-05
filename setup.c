@@ -10,6 +10,7 @@ int auria_init(auria_data *gd, char *filename)
     gd->state_Y = 1;
     gd->posY = 0.5;
     gd->posX = 1;
+    gd->posZ = 1;
     gd->level = 0;
     gd->offset = 0;
     gd->total_bars = 500;
@@ -33,6 +34,7 @@ int auria_init(auria_data *gd, char *filename)
 
     gd->accX = 0;
     gd->accY = 0;
+    gd->accZ = 0;
 
     gd->run = 1;
 
@@ -43,6 +45,7 @@ int auria_init(auria_data *gd, char *filename)
     for(n = 0; n < gd->total_bars; n++) {
         gd->line[n].pt.x = (float)n/gd->total_bars;
         gd->line[n].pt.y = (float)n/gd->total_bars;
+        gd->line[n].pt.z = 0;
         gd->line[n].amp = 1;
         gd->line[n].draw_circ = 0;
     }

@@ -199,7 +199,7 @@ static void initGfx()
     /* enable color material */
     glEnable( GL_COLOR_MATERIAL );
     /* enable depth test */
-    //glEnable( GL_DEPTH_TEST );
+    glEnable( GL_DEPTH_TEST );
     glEnable( GL_BLEND );
 }
 

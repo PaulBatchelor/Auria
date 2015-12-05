@@ -25,7 +25,7 @@ typedef struct  {
 } crossfade;
 
 typedef struct {
-    float x, y;
+    float x, y, z;
 } auria_point;
 
 typedef struct {
@@ -65,7 +65,7 @@ typedef struct {
     int w, h;
     int state;
     int state_Y;
-    float posX, posY;
+    float posX, posY, posZ;
     float onedsr;
     unsigned int offset;
     /* total number of bars */
@@ -88,6 +88,7 @@ typedef struct {
     /* joystick acceleration */
     float accX;
     float accY;
+    float accZ;
 
     /* Flag to Use portamento time. Should almost always be on.*/
     int use_port;

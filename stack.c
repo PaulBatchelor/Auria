@@ -38,6 +38,7 @@ int auria_stack_push(auria_stack *stack, auria_cor *cor)
     stack->pos++;
     stack->stack[pos].pt.x = cor->pt.x;
     stack->stack[pos].pt.y = cor->pt.y;
+    stack->stack[pos].pt.z = cor->pt.z;
     stack->stack[pos].draw_circ = cor->draw_circ;
     stack->stack[pos].amp = cor->amp;
 
@@ -72,6 +73,7 @@ int auria_fifo_push(auria_stack *stack, auria_cor *cor)
     
     stack->stack[wrapped_index].pt.x = cor->pt.x;
     stack->stack[wrapped_index].pt.y = cor->pt.y;
+    stack->stack[wrapped_index].pt.z = cor->pt.z;
     stack->stack[wrapped_index].amp = cor->amp;
     stack->stack[wrapped_index].draw_circ= cor->draw_circ;
 

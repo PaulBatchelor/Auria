@@ -29,6 +29,7 @@
 dup 0.9 2 delay 0.3 * 100 buthp 
 1 p -1 * 0.1 1 scale * + 
 
+# 5 p 0.5 * +
 
 dup dup 0.97 8000 revsc drop 0.4 * + 
 

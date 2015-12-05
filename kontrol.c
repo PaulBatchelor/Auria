@@ -5,7 +5,7 @@
 #include "sporth.h"
 #include "base.h"
 
-static float joy_to_float(int val);
+static float joy_to_float(int val, float acc);
 
 static int hold(auria_data *ad, int val);
 
@@ -44,7 +44,7 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
         switch(ctl) {
             case BUT_A: 
                 printf("but_a %d\n", val); 
-                auria_switch(ad);
+                if(val == 1) auria_switch(ad);
                 break;
             case BUT_B: 
                 printf("but_b %d\n", val); 
@@ -65,13 +65,19 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
     } else if(type == 2) {
         switch(ctl) {
             case JOY_L_X: 
-                ad->accX = joy_to_float(val);
+                ad->accX = joy_to_float(val, 0.000015);
                 break;
             case JOY_L_Y: 
-                ad->accY = joy_to_float(val);
+                ad->accY = joy_to_float(val, 0.000015);
                 if(ad->mode == AURIA_FREEZE) {
-                    ad->accY = -joy_to_float(val);
+                    ad->accY = -joy_to_float(val, 0.000015);
                 }
+                break;
+            case JOY_R_Y: 
+                //if(ad->mode == AURIA_SCROLL) {
+                    ad->accZ = joy_to_float(val, 0.00015);
+                //fprintf(stderr, "%d %g\n", val, ad->accZ);
+                //}
                 break;
             default: break;
         }
@@ -120,12 +126,13 @@ int auria_toggle_pitch(auria_data *ad) {
     return 0;
 }
 
-static float joy_to_float(int val) 
+static float joy_to_float(int val, float acc) 
 {
     if(abs(val) > 1050) {
         float speed = (2 * ((float)(val + 32767) / 65278) - 1);
         /*TODO make this constant based on samplerate */
-        return speed * 0.000015;
+        //return speed * 0.000015;
+        return speed * acc;
     } else {
         return 0;
     }

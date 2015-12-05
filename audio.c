@@ -85,6 +85,7 @@ int auria_compute_audio(auria_data *gd)
 
     gd->posX = gd->posX + gd->accX + gd->hold_x;
     gd->posY = gd->posY + gd->accY + gd->hold_y;
+    gd->posZ = gd->posZ + gd->accZ;
     
     gd->pd.p[0] = 2 * gd->posX - 1;
     gd->pd.p[1] = 2 * gd->posY - 1;
@@ -103,6 +104,9 @@ int auria_compute_audio(auria_data *gd)
 
     if(gd->posY > 1) gd->posY = 1;
     else if(gd->posY < 0) gd->posY = 0;
+    
+    //if(gd->posZ > 1) gd->posZ = 1;
+    //else if(gd->posZ < 1) gd->posZ = 0;
 
     sp_port_compute(sp, gd->portY, &gd->posY, &time_control);
 
