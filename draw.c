@@ -204,7 +204,7 @@ static int add_new_point2(auria_data *gd)
         cor.pt.x = gd->posX;
         cor.pt.y = gd->posY;
         cor.pt.z = gd->posZ;
-        fprintf(stderr, "MYPT %g\n", gd->posZ);
+        //fprintf(stderr, "MYPT %g\n", gd->posZ);
         cor.amp = gd->pd.p[2];
         cor.draw_circ = 0;
         if(please_draw_circ == 1) {
