@@ -81,5 +81,8 @@ int auria_init(auria_data *gd, char *filename)
     gd->please_trig_lb = 0;
 
     gd->rot_X = 0;
+
+    gd->js_L_Y = 0;
+    gd->js_L_X = 0;
     return 0;
 }

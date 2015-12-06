@@ -15,6 +15,10 @@ extern "C" {
 #define BALL_Y_POS pd.p[7]
 #define BALL_Z_POS pd.p[8]
 
+#define JS_L_X pd.p[9]
+#define JS_L_Y pd.p[10]
+#define JS_L_Z pd.p[11]
+
 enum {
     AURIA_SCROLL,
     AURIA_FREEZE,
@@ -89,6 +93,9 @@ typedef struct {
 
     f310_d fd;
 
+    /* joystick params */
+    float js_L_X;
+    float js_L_Y;
     /* joystick acceleration */
     float accX;
     float accY;

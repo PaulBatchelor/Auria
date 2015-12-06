@@ -6,6 +6,16 @@
 #define LENGTH(x) ((int)(sizeof(x) / sizeof *(x)))
 #define min(a, b) (a < b) ? a : b
 
+static float limit(float val, float myMin, float myMax) 
+{
+    float out = val;
+
+    if(val > myMax) out = myMax;
+    else if(val < myMin) out = myMin;
+
+    return out;
+}
+
 
 int auria_init_audio(auria_data *gd, char *filename)
 {
@@ -83,13 +93,23 @@ int auria_compute_audio(auria_data *gd)
     }
     int mode = gd->mode;
 
-    //gd->posX = gd->posX + gd->accX + gd->hold_x;
-    //gd->posY = gd->posY + gd->accY + gd->hold_y;
-    //gd->posZ = gd->posZ + gd->accZ;
-    
-	gd->posX = gd->BALL_X_POS; 
-	gd->posY = gd->BALL_Y_POS; 
-	gd->posZ = gd->BALL_Z_POS; 
+
+    if(mode == AURIA_FREEZE) {
+        gd->posX = gd->posX + gd->accX + gd->hold_x;
+        gd->posY = gd->posY + gd->accY + gd->hold_y;
+        gd->posZ = gd->posZ + gd->accZ;
+    } else {
+
+        gd->js_L_X = limit(gd->js_L_X + gd->accX + gd->hold_x, 0, 1);
+        gd->js_L_Y = limit(gd->js_L_Y + gd->accY + gd->hold_y, 0, 1);
+        
+        gd->JS_L_Y = gd->js_L_Y;
+        gd->JS_L_X = gd->js_L_X;
+        gd->JS_L_Z = limit(gd->js_L_Y + gd->accZ, 0, 1);
+        gd->posX = gd->BALL_X_POS; 
+        gd->posY = gd->BALL_Y_POS; 
+        gd->posZ = gd->BALL_Z_POS; 
+    }
     
     gd->pd.p[0] = 2 * gd->posX - 1;
     gd->pd.p[1] = 2 * gd->posY - 1;
