@@ -83,9 +83,13 @@ int auria_compute_audio(auria_data *gd)
     }
     int mode = gd->mode;
 
-    gd->posX = gd->posX + gd->accX + gd->hold_x;
-    gd->posY = gd->posY + gd->accY + gd->hold_y;
-    gd->posZ = gd->posZ + gd->accZ;
+    //gd->posX = gd->posX + gd->accX + gd->hold_x;
+    //gd->posY = gd->posY + gd->accY + gd->hold_y;
+    //gd->posZ = gd->posZ + gd->accZ;
+    
+	gd->posX = gd->BALL_X_POS; 
+	gd->posY = gd->BALL_Y_POS; 
+	gd->posZ = gd->BALL_Z_POS; 
     
     gd->pd.p[0] = 2 * gd->posX - 1;
     gd->pd.p[1] = 2 * gd->posY - 1;

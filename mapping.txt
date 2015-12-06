@@ -5,11 +5,9 @@ Y_L joystick mapping
 X_R joystick mapping 
 Y_R joystick mapping 
 
-Ball X pos
-Ball Y pos
-Ball Z pos
-
-tick gen
+Ball X pos (set)
+Ball Y pos (set)
+Ball Z pos (set)
 
 bgColor R
 bgColor G
@@ -24,6 +22,8 @@ lineColor G
 lineColor B
 
 left trigger
+blue X
+red B
+yellow Y
 
-
-
+tick gen

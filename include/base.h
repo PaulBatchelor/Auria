@@ -11,6 +11,10 @@ extern "C" {
 #define AURIA_STACK_SIZE 32
 #define AURIA_NUM_TRAILS 10 
 
+#define BALL_X_POS pd.p[6]
+#define BALL_Y_POS pd.p[7]
+#define BALL_Z_POS pd.p[8]
+
 enum {
     AURIA_SCROLL,
     AURIA_FREEZE,
