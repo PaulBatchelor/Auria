@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <iostream>
+#include <sys/stat.h>
 
 #ifdef __MACOSX_CORE__
 #include <GLUT/glut.h>
@@ -44,6 +45,8 @@ RtAudio audio;
 long g_width = 640;
 long g_height = 480;
 
+int g_init = 0;
+
 //void mouseFunc( int button, int state, int x, int y );
 //void passiveMotionFunc(int x, int y);
 //void initGfx();
@@ -56,6 +59,25 @@ static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFram
 
     SAMPLE * input = (SAMPLE *)inputBuffer;
     SAMPLE * output = (SAMPLE *)outputBuffer;
+
+    struct stat attrib;
+    stat(gd->pd.filename, &attrib);
+    if(attrib.st_mtime != gd->lc.ltime) {
+        if(g_init != 1) {
+            int error = 0;
+            plumber_reinit(&gd->pd);
+            /* Add our ftable before reparsing */
+            plumber_ftmap_delete(&gd->pd, 0);
+            plumber_ftmap_add(&gd->pd, "aur", gd->arg_tbl);
+            plumber_ftmap_delete(&gd->pd, 1);
+            error = plumber_reparse(&gd->pd);
+            plumber_swap(&gd->pd, error);
+            //plumber_recompile(&gd->pd);
+        } else {
+            g_init = 0;
+        }
+        gd->lc.ltime = attrib.st_mtime;
+    }
 
     for( int i = 0; i < numFrames * MY_CHANNELS; i+=2 )
     {
@@ -89,6 +111,9 @@ static void keyboardFunc( unsigned char key, int x, int y )
         case 'q': 
             auria_destroy(&g_data);
             exit(0);
+            break;
+        case 'r': 
+            auria_rotation_reset(&g_data);
             break;
         case 32: /* space */
 
@@ -200,7 +225,7 @@ static void initGfx()
     glEnable( GL_COLOR_MATERIAL );
     /* enable depth test */
     glEnable( GL_DEPTH_TEST );
-    glEnable( GL_BLEND );
+    //glEnable( GL_BLEND );
 }
 
 int auria_destroy(auria_data *gd) 

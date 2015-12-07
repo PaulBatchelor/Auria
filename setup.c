@@ -84,5 +84,29 @@ int auria_init(auria_data *gd, char *filename)
 
     gd->js_L_Y = 0;
     gd->js_L_X = 0;
+    gd->js_R_Y = 0;
+
+    gd->lc.counter = 0;
+    gd->lc.counter = 0;
+
+    gd->rot_X_off = 0;
+    gd->arg_tbl->tbl[0] = 0.5; 
+
+    auria_set_color(&gd->ball_color, 0.5607, 0.996, 0.0353);
+    auria_set_opacity(&gd->ball_color, 1);
+    
+    auria_set_color(&gd->bgcolor, 1, 1, 1);
+    auria_set_opacity(&gd->bgcolor, 1);
+
+    /* set auria argument color defaults */
+
+    gd->BALL_R = gd->ball_color.r;
+    gd->BALL_G = gd->ball_color.g;
+    gd->BALL_B = gd->ball_color.b;
+    
+    gd->BGCOLOR_R = gd->bgcolor.r;
+    gd->BGCOLOR_G = gd->bgcolor.g;
+    gd->BGCOLOR_B = gd->bgcolor.b;
+
     return 0;
 }

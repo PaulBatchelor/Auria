@@ -84,6 +84,14 @@ int auria_fifo_push(auria_stack *stack, auria_cor *cor)
     stack->stack[wrapped_index].amp = cor->amp;
     stack->stack[wrapped_index].draw_circ= cor->draw_circ;
 
+    stack->stack[wrapped_index].ball_color.r = cor->ball_color.r;
+    stack->stack[wrapped_index].ball_color.g = cor->ball_color.g;
+    stack->stack[wrapped_index].ball_color.b = cor->ball_color.b;
+    
+    stack->stack[wrapped_index].bgcolor.r = cor->bgcolor.r;
+    stack->stack[wrapped_index].bgcolor.g = cor->bgcolor.g;
+    stack->stack[wrapped_index].bgcolor.b = cor->bgcolor.b;
+
     return 0;
 }
 

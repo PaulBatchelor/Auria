@@ -75,7 +75,7 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 break;
             case JOY_R_Y: 
                 //if(ad->mode == AURIA_SCROLL) {
-                    ad->accZ = joy_to_float(val, 0.00015);
+                    ad->accZ = -joy_to_float(val, 0.00015);
                 //fprintf(stderr, "%d %g\n", val, ad->accZ);
                 //}
                 break;
@@ -112,6 +112,10 @@ int auria_switch(auria_data *ad)
         //ad->posY = ad->line[index].pt.y;
         ad->posX = cor->pt.x;
         ad->posY = cor->pt.y;
+        ad->posZ = cor->pt.z;
+        ad->js_L_X = 0.5;
+        ad->js_L_Y = 0.5;
+        ad->js_R_Y = 0;
         ad->cf.pos = 0;
         ad->nbars = 0;
         ad->offset = 0;

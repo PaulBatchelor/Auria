@@ -158,8 +158,9 @@ static void draw_ball(auria_data *gd,
     float incr = 2 * M_PI / (npoints - 1);
     float eps = 0.000001;
 
-    glColor3f(0.5607, 0.996, 0.0353);
-    
+    //glColor3f(0.5607, 0.996, 0.0353);
+  
+
     //fprintf(stderr, "ball: %g %g %g\n", pX, pY, pZ); 
     if(gd->mode == AURIA_FREEZE) {
         int pos = gd->ghosts.pos;    
@@ -168,17 +169,23 @@ static void draw_ball(auria_data *gd,
         gd->ghosts.pt[pos].y = pY;
         gd->ghosts.pt[pos].z = pZ;
         gd->ghosts.size[pos] = size;
+        gd->ghosts.color[pos].r = gd->ball_color.r;
+        gd->ghosts.color[pos].g = gd->ball_color.g;
+        gd->ghosts.color[pos].b = gd->ball_color.b;
+        gd->ghosts.color[pos].a = 1;
         gd->ghosts.len = min(AURIA_NUM_TRAILS, gd->ghosts.len + 1);
         gd->ghosts.last = pos;
+
         index = gd->ghosts.last;
         float opacity = 1;
         for(circ = 0; circ < gd->ghosts.len; circ++) {
-            glColor4f(0.5607, 0.996, 0.0353, opacity);
+            //glColor4f(0.5607, 0.996, 0.0353, opacity);
+            auria_glcolor(&gd->ghosts.color[index]);
             glBegin(GL_TRIANGLE_FAN);
                 for(n = 0; n < npoints; n++) {
                     glVertex3f(gd->ghosts.pt[index].x + size * cos(n * incr), 
                             gd->ghosts.pt[index].y + (size * sin(n * incr)),
-                            gd->ghosts.pt[index].z + eps);
+                            gd->ghosts.pt[index].z);
                 }
             glEnd();
             index = (AURIA_NUM_TRAILS + index - 1) % AURIA_NUM_TRAILS;
@@ -186,10 +193,11 @@ static void draw_ball(auria_data *gd,
         }
 
     } else {
+        auria_glcolor(&gd->ball_color); 
         glBegin(GL_TRIANGLE_FAN);
             for(n = 0; n < npoints; n++) {
                 glVertex3f(pX + size * cos(n * incr), 
-                        pY + (size * sin(n * incr)), pZ + eps);
+                        pY + (size * sin(n * incr)), pZ);
             }
         glEnd();
     }
@@ -206,8 +214,17 @@ static int add_new_point2(auria_data *gd)
         cor.pt.y = gd->posY;
         cor.pt.z = gd->posZ;
         //fprintf(stderr, "MYPT %g\n", gd->posZ);
-        cor.amp = gd->pd.p[2];
+        //cor.amp = gd->pd.p[2];
         cor.draw_circ = 0;
+
+        cor.ball_color.r = gd->ball_color.r;
+        cor.ball_color.g = gd->ball_color.g;
+        cor.ball_color.b = gd->ball_color.b;
+        
+        cor.bgcolor.r = gd->bgcolor.r;
+        cor.bgcolor.g = gd->bgcolor.g;
+        cor.bgcolor.b = gd->bgcolor.b;
+
         if(please_draw_circ == 1) {
             cor.draw_circ = 1;
             gd->please_draw_circ = 0;
@@ -216,6 +233,7 @@ static int add_new_point2(auria_data *gd)
         if(gd->wrap_mode) {
             auria_fifo_shift(&gd->line_fifo);
         }
+
         auria_fifo_push(&gd->line_fifo, &cor);
 
         ///*TODO make this work */ 
@@ -303,19 +321,19 @@ int auria_draw(auria_data *gd)
         get_position2(gd, index, &pX, &pY, &pZ, fX1, fY2);
         auria_cor *cor = NULL;
         auria_fifo_return(&gd->line_fifo, &cor, index);
+        auria_set_color(&gd->ball_color, cor->ball_color.r, cor->ball_color.g, cor->ball_color.b); 
         glClearColor(
-                1 * cor->amp, 
-                1 * cor->amp, 
-                1 * cor->amp, 
+                cor->bgcolor.r, 
+                cor->bgcolor.g, 
+                cor->bgcolor.b, 
                 1);
-
         //glClearColor(
         //        1 * gd->line[index].amp, 
         //        1 * gd->line[index].amp, 
         //        1 * gd->line[index].amp, 
         //        1);
     } else {
-        glClearColor(1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 * gd->pd.p[2], 1 );
+        glClearColor(gd->bgcolor.r, gd->bgcolor.g, gd->bgcolor.b, 1 );
     }
 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -323,17 +341,19 @@ int auria_draw(auria_data *gd)
     
     if(gd->rot_X > 0) {
         glRotated(1, 0, 1, 0);
+        gd->rot_X_off++;
     } else if(gd->rot_X < 0) {
         glRotated(-1, 0, 1, 0);
+        gd->rot_X_off--;
     }
 
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    draw_ball(gd, size, pX, pY, pZ, 10 * fX2, 10 * fY2);
     draw_line2(gd, fX1, fY2);  
     draw_ticks(gd, fX1, fY2);
 
-    draw_ball(gd, size, pX, pY, pZ, 10 * fX2, 10 * fY2);
-    glBlendFunc(GL_ONE, GL_ZERO);
+    //glBlendFunc(GL_ONE, GL_ZERO);
 
     add_new_point2(gd); 
 
@@ -341,3 +361,10 @@ int auria_draw(auria_data *gd)
     glFlush( );
     return 0;
 }
+
+int auria_rotation_reset(auria_data *ad)
+{
+    glRotated(-ad->rot_X_off, 0, 1, 0);
+    ad->rot_X_off = 0;
+}
+

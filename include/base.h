@@ -10,14 +10,29 @@ extern "C" {
 #define AURIA_BUFSIZE 10
 #define AURIA_STACK_SIZE 32
 #define AURIA_NUM_TRAILS 10 
+#define AURIA_ARG_SIZE 16
 
-#define BALL_X_POS pd.p[6]
-#define BALL_Y_POS pd.p[7]
-#define BALL_Z_POS pd.p[8]
+#define AUDIO_INPUT arg_tbl->tbl[0]
+#define BALL_X_POS arg_tbl->tbl[1]
+#define BALL_Y_POS arg_tbl->tbl[2]
+#define BALL_Z_POS arg_tbl->tbl[3]
 
-#define JS_L_X pd.p[9]
-#define JS_L_Y pd.p[10]
-#define JS_L_Z pd.p[11]
+
+#define JS_L_X arg_tbl->tbl[4]
+#define JS_L_Y arg_tbl->tbl[5]
+#define JS_R_X arg_tbl->tbl[6]
+#define JS_R_Y arg_tbl->tbl[7]
+
+#define BALL_R arg_tbl->tbl[8]
+#define BALL_G arg_tbl->tbl[9]
+#define BALL_B arg_tbl->tbl[10]
+
+#define BGCOLOR_R arg_tbl->tbl[11]
+#define BGCOLOR_G arg_tbl->tbl[12]
+#define BGCOLOR_B arg_tbl->tbl[13]
+
+#define LB_TICK arg_tbl->tbl[14]
+#define DRAW_TICK arg_tbl->tbl[15]
 
 enum {
     AURIA_SCROLL,
@@ -37,11 +52,21 @@ typedef struct {
 } auria_point;
 
 typedef struct {
-    //float x, y;
+    float r, g, b, a;
+} auria_color;
+
+typedef struct {
     auria_point pt;
     float amp;
     int draw_circ;
+    auria_color ball_color;
+    auria_color bgcolor;
 } auria_cor;
+
+typedef struct {
+    int counter;
+    time_t ltime;
+} live_coding;
 
 typedef struct {
     auria_cor *stack;
@@ -53,11 +78,14 @@ typedef struct {
     unsigned int offset;
 } auria_stack;
 
+
 typedef struct {
     auria_point pt[AURIA_NUM_TRAILS];
     float size[AURIA_NUM_TRAILS];
+    auria_color color[AURIA_NUM_TRAILS];
     int pos, len, last;
 } auria_circ_stack;
+
 
 typedef struct {
     sp_data *sp;
@@ -96,6 +124,7 @@ typedef struct {
     /* joystick params */
     float js_L_X;
     float js_L_Y;
+    float js_R_Y;
     /* joystick acceleration */
     float accX;
     float accY;
@@ -132,13 +161,27 @@ typedef struct {
     int please_trig_lb;
 
     int rot_X;
+    float rot_X_off;
+    int rot_Y;
+    float rot_Y_off;
+
+    /* live coding for sporth */
+
+    live_coding lc;
+
+    /* argument table, accessible from Sporth as 'aur' */
+
+    sp_ftbl *arg_tbl;
+
+    /* ball color */
+    auria_color ball_color;
+    auria_color bgcolor;
 }auria_data;
 
 int auria_draw(auria_data *gd);
 /* Initializers */
 int auria_init(auria_data *gd, char *filename);
 int auria_init_audio(auria_data *gd, char *filename);
-
 
 int auria_compute_audio(auria_data *gd);
 
@@ -169,6 +212,16 @@ int auria_fifo_init(auria_stack *stack);
 int auria_fifo_push(auria_stack *stack, auria_cor *cor);
 int auria_fifo_return(auria_stack *stack, auria_cor **cor, unsigned int index);
 unsigned int auria_fifo_get_len(auria_stack *stack);
+
+/* rotation reset */
+
+int auria_rotation_reset(auria_data *ad);
+
+/* set color */
+
+int auria_set_color(auria_color *c, float r, float g, float b);
+int auria_set_opacity(auria_color *c, float a);
+int auria_glcolor(auria_color *c);
 
 #ifdef __cplusplus
 }

@@ -22,8 +22,6 @@ int auria_init_audio(auria_data *gd, char *filename)
     sp_createn(&gd->sp, 2);
     sp_data *sp = gd->sp;
     gd->sp->sr = gd->sr;
-    //printf("loading file %s\n", filename);
-    //sp_ftbl_loadfile(sp, &gd->wav, filename);
     sp_ftbl_create(sp, &gd->wav, sp->sr * AURIA_BUFSIZE);
     auria_mincer_create(&gd->mincer);
     auria_mincer_init(sp, gd->mincer, gd->wav);
@@ -45,6 +43,7 @@ int auria_init_audio(auria_data *gd, char *filename)
     printf("opening file %s\n", filename);
 
     pd->fp = fopen(filename, "r");
+    pd->filename = filename;
 
     if(pd->fp == NULL) {
         fprintf(stderr, "There was a problem opening the file %s.\n", filename);
@@ -55,11 +54,18 @@ int auria_init_audio(auria_data *gd, char *filename)
     pd->nchan = 1;
 
     plumber_register(pd);
+   
+    /* create argument table, push as table 'aur' from sporth */
+    sp_ftbl_create(gd->sp, &gd->arg_tbl, AURIA_ARG_SIZE);
+    plumber_ftmap_delete(&gd->pd, 0);
+    plumber_ftmap_add(&gd->pd, "aur", gd->arg_tbl);
+    plumber_ftmap_delete(&gd->pd, 1);
 
     if(plumber_parse(pd) == PLUMBER_OK) {
         plumber_compute(pd, PLUMBER_INIT);
         pd->sporth.stack.pos = 0;
     }
+    
     return 0;
 }
 
@@ -102,23 +108,28 @@ int auria_compute_audio(auria_data *gd)
 
         gd->js_L_X = limit(gd->js_L_X + gd->accX + gd->hold_x, 0, 1);
         gd->js_L_Y = limit(gd->js_L_Y + gd->accY + gd->hold_y, 0, 1);
+        gd->js_R_Y = limit(gd->js_R_Y + gd->accZ, 0, 1);
         
         gd->JS_L_Y = gd->js_L_Y;
         gd->JS_L_X = gd->js_L_X;
-        gd->JS_L_Z = limit(gd->js_L_Y + gd->accZ, 0, 1);
+        gd->JS_R_Y = gd->js_R_Y;
         gd->posX = gd->BALL_X_POS; 
         gd->posY = gd->BALL_Y_POS; 
         gd->posZ = gd->BALL_Z_POS; 
+
+        auria_set_color(&gd->ball_color, gd->BALL_R, gd->BALL_G, gd->BALL_B);
+        
+        auria_set_color(&gd->bgcolor, gd->BGCOLOR_R, gd->BGCOLOR_G, gd->BGCOLOR_B);
     }
     
-    gd->pd.p[0] = 2 * gd->posX - 1;
-    gd->pd.p[1] = 2 * gd->posY - 1;
+    //gd->pd.p[0] = 2 * gd->posX - 1;
+    //gd->pd.p[1] = 2 * gd->posY - 1;
 
     if(gd->please_trig_lb == 1) {
-        gd->pd.p[4] = 1;
+        gd->LB_TICK = 1;
         gd->please_trig_lb = 0;
     } else {
-        gd->pd.p[4] = 0;
+        gd->LB_TICK = 0;
     }
     
 
@@ -160,10 +171,9 @@ int auria_compute_audio(auria_data *gd)
 
     }
 
-    if(gd->pd.p[3] == 1) {
+    if(gd->DRAW_TICK == 1) {
         gd->please_draw_circ = 1;
     }
-
 
     if(mode == AURIA_SCROLL) {
         //gd->sum += fabs(out); 
