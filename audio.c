@@ -65,7 +65,7 @@ int auria_init_audio(auria_data *gd, char *filename)
         plumber_compute(pd, PLUMBER_INIT);
         pd->sporth.stack.pos = 0;
     }
-    
+    fclose(pd->fp);
     return 0;
 }
 

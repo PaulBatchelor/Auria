@@ -5,18 +5,24 @@
 
 # 4 'aur' tget
 # randomize X
-0 1 1 randi
-1 'aur' tset
+# 0 1 1 randi
+0.3 1 sine 0.1 1 scale 
+2 'aur' tset
+
+0.1 1 sine -5 1 scale 
+3 'aur' tset
 
 # 5 'aur' tget
 # randomize Y
-0 1 0.3 randi
-2 'aur' tset
+# 0 1 0.3 randi
+# 0.5 1 'aur' tset
 
+3 1 sine 0.4 0.6  scale 
+1 'aur' tset
 
-0 1 2 randi 8 'aur' tset
-0 1 2 randi 9 'aur' tset
-0 1 1 randi 10 'aur' tset
+0 1 0.3 randi 8 'aur' tset
+0 1 0.3 randi 9 'aur' tset
+0 1 0.3 randi 10 'aur' tset
 
 1 2 'aur' tget - dup dup
 11 'aur' tset
@@ -93,4 +99,6 @@ dup dup 0.97 8000 revsc drop
 1 'aur' tget 0.5 * 0.1 +
 * + 
 
-0.8 1 2 'aur' tget - * 0.1 + * 
+# 0.8 1 2 'aur' tget - * 0.1 + * 
+
+0.3 1 sine 0.1 1 scale *
