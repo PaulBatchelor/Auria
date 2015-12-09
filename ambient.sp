@@ -24,7 +24,7 @@
 13 'aur' tset
 
 # sets jitter amount
-0.5 1 'aur' tget * 0 pset
+0.1 1 'aur' tget * 0 pset
 1 'aur' tget 1 * 1 pset
 1 'aur' tget 32 * 2 pset
 
@@ -82,6 +82,7 @@ jitter + mtof 0.3 saw *
 
 1000 butlp  
 500 buthp 
+0 'aur' tget 500 buthp dup 1 pset + 
 dup 0.9 2 delay 0.3 * 
 1000 buthp 
 swap 0.2 1 sine 0 1 scale * + 
@@ -89,8 +90,17 @@ swap 0.2 1 sine 0 1 scale * +
 14 'aur' tget 1 0 3 tenv 
 1 'tbl' tget mtof 0.01 2 7 2 fm * +
 
-dup dup 0.97 8000 revsc drop 
-1 'aur' tget 0.5 * 0.1 +
+
+dup 
+1 p 
+dup 0.9 1.8 delay 0.8 * +
++
+dup 
+
+0.97 8000 revsc drop 
+0.4 #1 'aur' tget 0.5 * 0.1 +
 * + 
 
 0.8 1 2 'aur' tget - * 0.1 + * 
+
+16 'aur' tget +

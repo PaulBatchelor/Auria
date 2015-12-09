@@ -10,7 +10,7 @@ extern "C" {
 #define AURIA_BUFSIZE 10
 #define AURIA_STACK_SIZE 32
 #define AURIA_NUM_TRAILS 10 
-#define AURIA_ARG_SIZE 16
+#define AURIA_ARG_SIZE 17
 
 #define AUDIO_INPUT arg_tbl->tbl[0]
 #define BALL_X_POS arg_tbl->tbl[1]
@@ -33,6 +33,8 @@ extern "C" {
 
 #define LB_TICK arg_tbl->tbl[14]
 #define DRAW_TICK arg_tbl->tbl[15]
+
+#define MINCER_OUT arg_tbl->tbl[16]
 
 enum {
     AURIA_SCROLL,
@@ -176,6 +178,9 @@ typedef struct {
     /* ball color */
     auria_color ball_color;
     auria_color bgcolor;
+
+    /* toggle duplex mode (run sporth while in freeze mode) */
+    char duplex_mode;
 }auria_data;
 
 int auria_draw(auria_data *gd);
@@ -222,6 +227,7 @@ int auria_rotation_reset(auria_data *ad);
 int auria_set_color(auria_color *c, float r, float g, float b);
 int auria_set_opacity(auria_color *c, float a);
 int auria_glcolor(auria_color *c);
+int auria_toggle_duplex(auria_data *ad);
 
 #ifdef __cplusplus
 }
