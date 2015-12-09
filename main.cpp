@@ -78,6 +78,7 @@ static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFram
             error = plumber_reparse(&gd->pd);
             plumber_swap(&gd->pd, error);
             fclose(gd->pd.fp);
+            gd->pd.fp = NULL;
             //plumber_recompile(&gd->pd);
         } else {
             g_init = 0;
