@@ -108,7 +108,5 @@ int auria_init(auria_data *gd, char *filename)
     gd->BGCOLOR_G = gd->bgcolor.g;
     gd->BGCOLOR_B = gd->bgcolor.b;
 
-    gd->duplex_mode = 0;
-
     return 0;
 }

@@ -167,9 +167,3 @@ static int hold(auria_data *ad, int val)
     }
     return 0;
 }
-
-int auria_toggle_duplex(auria_data *ad) {
-    ad->duplex_mode = (ad->duplex_mode == 1) ? 0 : 1;
-    ad->MINCER_OUT = 0;
-    return 0;
-}
