@@ -80,6 +80,7 @@ int auria_destroy_audio(auria_data *gd)
     sp_port_destroy(&gd->rms_smooth);
     sp_destroy(&sp);
     plumber_clean(&gd->pd);
+    sp_ftbl_destroy(&gd->arg_tbl);
     return 0;
 }
 int auria_compute_audio(auria_data *gd)
