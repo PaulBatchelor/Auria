@@ -297,19 +297,6 @@ int auria_draw(auria_data *gd)
     float pX = 0;
     pX = fX2 * (1 - 2 * gd->posX);
     float pZ = gd->posZ;   
-    
-    if(isinf(pY)) {
-        fprintf(stderr, "uh oh y %g!\n", level);
-        pY = 1;
-    }
-    
-    if(isinf(pZ)) {
-        fprintf(stderr, "uh oh z!\n");
-    }
-    
-    if(isinf(pX)) {
-        fprintf(stderr, "uh oh z!\n");
-    }
  
     if(gd->mode == AURIA_FREEZE) {
         uint32_t index = floor(gd->posY * (auria_fifo_get_len(&gd->line_fifo) - 1));
