@@ -10,7 +10,7 @@
 
 # 5 'aur' tget
 # randomize Y
-0 1 0.3 randi
+0 1 1 randi
 2 'aur' tset
 
 
@@ -24,7 +24,7 @@
 13 'aur' tset
 
 # sets jitter amount
-0.5 1 'aur' tget * 0 pset
+0.1 1 'aur' tget * 0 pset
 1 'aur' tget 1 * 1 pset
 1 'aur' tget 32 * 2 pset
 
@@ -79,18 +79,27 @@ jitter + mtof 0.3 saw *
 
 +
 
+0 'aur' tget  +
 
 1000 butlp  
 500 buthp 
-dup 0.9 2 delay 0.3 * 
+dup 0.8 2 delay 0.3 * 
+
 1000 buthp 
 swap 0.2 1 sine 0 1 scale * + 
 
 14 'aur' tget 1 0 3 tenv 
 1 'tbl' tget mtof 0.01 2 7 2 fm * +
 
-dup dup 0.97 8000 revsc drop 
-1 'aur' tget 0.5 * 0.1 +
+0 'aur' tget 500 buthp dup 
+2 'aur' tget 0.9 *
+3 delay + +
+dup 
+
+dup 0.97 8000 revsc drop 
+1 'aur' tget 0.1 * 0.3 +
 * + 
 
 0.8 1 2 'aur' tget - * 0.1 + * 
+
+16 'aur' tget  +

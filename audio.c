@@ -99,9 +99,9 @@ int auria_compute_audio(auria_data *gd)
         gd->wtpos = gd->mincer->wtpos - 1;
     }
     int mode = gd->mode;
+    char duplex_mode = gd->duplex_mode;
 
-
-    if(mode == AURIA_FREEZE) {
+    if(mode == AURIA_FREEZE && duplex_mode == 0) {
         gd->posX = gd->posX + gd->accX + gd->hold_x;
         gd->posY = gd->posY + gd->accY + gd->hold_y;
         gd->posZ = gd->posZ + gd->accZ;
@@ -117,10 +117,11 @@ int auria_compute_audio(auria_data *gd)
         gd->posX = gd->BALL_X_POS; 
         gd->posY = gd->BALL_Y_POS; 
         gd->posZ = gd->BALL_Z_POS; 
-
-        auria_set_color(&gd->ball_color, gd->BALL_R, gd->BALL_G, gd->BALL_B);
         
-        auria_set_color(&gd->bgcolor, gd->BGCOLOR_R, gd->BGCOLOR_G, gd->BGCOLOR_B);
+        if(duplex_mode == 0) {
+            auria_set_color(&gd->ball_color, gd->BALL_R, gd->BALL_G, gd->BALL_B);
+            auria_set_color(&gd->bgcolor, gd->BGCOLOR_R, gd->BGCOLOR_G, gd->BGCOLOR_B);
+        }
     }
     
     //gd->pd.p[0] = 2 * gd->posX - 1;
@@ -152,7 +153,7 @@ int auria_compute_audio(auria_data *gd)
     unsigned int t = ((gd->wtpos + gd->mincer_offset - 1) % gd->wav->size);
     wt_out = gd->wav->tbl[t];
 
-    if(mode == AURIA_SCROLL) {
+    if(mode == AURIA_SCROLL || duplex_mode == 1) {
         plumber_compute(&gd->pd, PLUMBER_COMPUTE);
         sporth_out = sporth_stack_pop_float(&gd->pd.sporth.stack);
         //uint32_t pos = (gd->size_s - gd->mincer_offset) % gd->wav->size;
@@ -202,6 +203,12 @@ int auria_compute_audio(auria_data *gd)
         }
         gd->tbl_pos = (gd->tbl_pos + 1) % gd->wav->size;
     }
+
+    if(duplex_mode == 1) {
+        gd->MINCER_OUT = mincer_out;
+        out = sporth_out;
+    }
+
     sp->out[0] = out;
     sp->out[1] = out;
     

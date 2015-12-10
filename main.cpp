@@ -88,7 +88,7 @@ static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFram
 
     for( int i = 0; i < numFrames * MY_CHANNELS; i+=2 )
     {
-        gd->pd.p[5] = input[i];
+        gd->AUDIO_INPUT = input[i];
         auria_compute_audio(gd);
         output[i] = gd->sp->out[0];
         output[i + 1] = gd->sp->out[1];
@@ -121,6 +121,9 @@ static void keyboardFunc( unsigned char key, int x, int y )
             break;
         case 'r': 
             auria_rotation_reset(&g_data);
+            break;
+        case 'd': 
+            auria_toggle_duplex(&g_data);
             break;
         case 32: /* space */
 
