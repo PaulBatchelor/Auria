@@ -62,7 +62,7 @@ static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFram
 
     struct stat attrib;
     stat(gd->pd.filename, &attrib);
-    if(attrib.st_mtime != gd->lc.ltime) {
+    if(gd->please_recompile == 1) {
         if(g_init != 1) {
             int error = 0;
             gd->pd.fp = fopen(gd->pd.filename, "r");
@@ -84,6 +84,7 @@ static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFram
             g_init = 0;
         }
         gd->lc.ltime = attrib.st_mtime;
+        gd->please_recompile = 0;
     }
 
     for( int i = 0; i < numFrames * MY_CHANNELS; i+=2 )
@@ -124,6 +125,9 @@ static void keyboardFunc( unsigned char key, int x, int y )
             break;
         case 'd': 
             auria_toggle_duplex(&g_data);
+            break;
+        case 'c': 
+            g_data.please_recompile = 1;
             break;
         case 32: /* space */
 

@@ -36,7 +36,7 @@ CFLAGS += -Iinclude  -I ./ -DUSE_F310=1 -Wall
 CXXFLAGS += -Iinclude -DUSE_F310=1
 
 OBJ=main.o RtAudio.o draw.o audio.o mincer.o f310.o kontrol.o setup.o stack.o \
-	color.o
+	color.o func.o
 
 default: auria
 

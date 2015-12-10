@@ -15,7 +15,12 @@ int auria_init(auria_data *gd, char *filename)
     gd->offset = 0;
     gd->total_bars = 500;
     gd->mode = AURIA_FREEZE;
+
     auria_init_audio(gd, filename);
+
+    gd->pd.ud = gd;
+    gd->pd.f[0] = auria_toggle_duplexf;
+    gd->pd.f[1] = auria_reloadf;
     gd->counter = 0;
     gd->counter_speed = (unsigned int) gd->wav->size / gd->total_bars;
     gd->mincer_offset = 0;
@@ -110,6 +115,10 @@ int auria_init(auria_data *gd, char *filename)
 
 
     gd->duplex_mode = 0;
+    gd->please_tick_red = 0; 
+    gd->please_tick_yellow = 0; 
+    gd->please_tick_blue = 0; 
 
-    return 0;
+    gd->please_recompile = 0;
+    return 0; 
 }

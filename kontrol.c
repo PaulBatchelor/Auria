@@ -48,7 +48,14 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 break;
             case BUT_B: 
                 printf("but_b %d\n", val); 
+                ad->please_tick_red = 1;
                 //if(val == 1) auria_toggle_pitch(ad);
+                break;
+            case BUT_X:
+                if(val == 1) ad->please_tick_blue = 1;
+                break;
+            case BUT_Y:
+                if(val == 1) ad->please_tick_yellow = 1;
                 break;
             case BUT_RB:
                 printf("but_rb %d\n", val); 
@@ -172,5 +179,25 @@ int auria_toggle_duplex(auria_data *ad)
 {
     ad->duplex_mode = (ad->duplex_mode == 0 ? 1 : 0);
     ad->MINCER_OUT = 0;
+    return 0;
+}
+
+int auria_reload(auria_data *ad) 
+{
+    int error = 0;
+    ad->pd.fp = fopen(ad->pd.filename, "r");
+    fprintf(stderr, "opening %s\n", ad->pd.filename);
+    if(ad->pd.fp == NULL) {
+        fprintf(stderr, "uh oh!\n");
+    }
+    plumber_reinit(&ad->pd);
+    /* Add our ftable before reparsing */
+    plumber_ftmap_delete(&ad->pd, 0);
+    plumber_ftmap_add(&ad->pd, "aur", ad->arg_tbl);
+    plumber_ftmap_delete(&ad->pd, 1);
+    error = plumber_reparse(&ad->pd);
+    plumber_swap(&ad->pd, error);
+    fclose(ad->pd.fp);
+    ad->pd.fp = NULL;
     return 0;
 }

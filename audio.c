@@ -16,6 +16,15 @@ static float limit(float val, float myMin, float myMax)
     return out;
 }
 
+static void please_tick(int *val, SPFLOAT *chan) 
+{
+    if(*val) {
+        *chan = 1;
+    } else {
+        *chan = 0;
+    } 
+    *val = 0;
+}
 
 int auria_init_audio(auria_data *gd, char *filename)
 {
@@ -66,6 +75,7 @@ int auria_init_audio(auria_data *gd, char *filename)
         pd->sporth.stack.pos = 0;
     }
     fclose(pd->fp);
+    pd->fp = NULL;
     return 0;
 }
 
@@ -122,7 +132,11 @@ int auria_compute_audio(auria_data *gd)
             auria_set_color(&gd->ball_color, gd->BALL_R, gd->BALL_G, gd->BALL_B);
             auria_set_color(&gd->bgcolor, gd->BGCOLOR_R, gd->BGCOLOR_G, gd->BGCOLOR_B);
         }
+        
     }
+    please_tick(&gd->please_tick_blue, &gd->BUT_BLUE);   
+    please_tick(&gd->please_tick_yellow, &gd->BUT_YELLOW);
+    please_tick(&gd->please_tick_red, &gd->BUT_RED);
     
     //gd->pd.p[0] = 2 * gd->posX - 1;
     //gd->pd.p[1] = 2 * gd->posY - 1;
@@ -230,6 +244,7 @@ float auria_cf(crossfade *cf, float v1, float v2)
     }
     return out;
 }
+
 int auria_cf_check(crossfade *cf)
 {
     return cf->pos < cf->time;

@@ -10,7 +10,7 @@ extern "C" {
 #define AURIA_BUFSIZE 10
 #define AURIA_STACK_SIZE 32
 #define AURIA_NUM_TRAILS 10 
-#define AURIA_ARG_SIZE 17
+#define AURIA_ARG_SIZE 20
 
 #define AUDIO_INPUT arg_tbl->tbl[0]
 #define BALL_X_POS arg_tbl->tbl[1]
@@ -35,6 +35,10 @@ extern "C" {
 #define DRAW_TICK arg_tbl->tbl[15]
 
 #define MINCER_OUT arg_tbl->tbl[16]
+
+#define BUT_BLUE arg_tbl->tbl[17]
+#define BUT_YELLOW arg_tbl->tbl[18]
+#define BUT_RED arg_tbl->tbl[19]
 
 enum {
     AURIA_SCROLL,
@@ -171,6 +175,9 @@ typedef struct {
 
     live_coding lc;
 
+    int please_recompile;
+
+
     /* argument table, accessible from Sporth as 'aur' */
 
     sp_ftbl *arg_tbl;
@@ -181,6 +188,13 @@ typedef struct {
 
     /* duplex mode */
     int duplex_mode;
+
+    /* aux buttons */
+
+    int please_tick_blue;
+    int please_tick_yellow;
+    int please_tick_red;
+
 }auria_data;
 
 int auria_draw(auria_data *gd);
@@ -231,6 +245,12 @@ int auria_glcolor(auria_color *c);
 /* duplex mode */
 
 int auria_toggle_duplex(auria_data *ad);
+
+/* user accessible functions in Sporth */
+
+int auria_reload(auria_data *ad);
+int auria_toggle_duplexf(sporth_stack *stack, void *ud);
+int auria_reloadf(sporth_stack *stack, void *ud);
 
 #ifdef __cplusplus
 }
