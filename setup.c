@@ -79,6 +79,11 @@ int auria_init(auria_data *gd, char *filename)
     for(n = 0; n < AURIA_NUM_TRAILS; n++) {
         gd->ghosts.pt[n].x = 0.5;
         gd->ghosts.pt[n].y = 0.5;
+        gd->ghosts.pt[n].z = 1;
+        gd->ghosts.color[n].r = 1;
+        gd->ghosts.color[n].g = 1;
+        gd->ghosts.color[n].b = 0;
+        gd->ghosts.size[n] = 0;
     }
 
     gd->hold_y = 0;

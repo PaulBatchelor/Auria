@@ -88,8 +88,9 @@ dup 0.8 2 delay 0.3 *
 1000 buthp 
 swap 0.2 1 sine 0 1 scale * + 
 
-14 'aur' tget 1 0 3 tenv 
-1 'tbl' tget mtof 0.01 2 7 2 fm * +
+14 'aur' tget dup 1 0 3 tenv 
+swap 0 'seq' tseq
+mtof 0.03 1 7 2 fm * +
 
 0 'aur' tget 500 buthp dup 
 2 'aur' tget 0.9 *
@@ -98,7 +99,8 @@ dup
 
 dup 0.97 8000 revsc drop 
 1 'aur' tget 0.1 * 0.3 +
-* + 
+* + dcblk 
+19 'aur' tget 3 3 tenv2 *
 
 0.8 1 2 'aur' tget - * 0.1 + * 
 

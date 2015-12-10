@@ -47,11 +47,6 @@ long g_height = 480;
 
 int g_init = 0;
 
-//void mouseFunc( int button, int state, int x, int y );
-//void passiveMotionFunc(int x, int y);
-//void initGfx();
-//void idleFunc();
-
 static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFrames,
             double streamTime, RtAudioStreamStatus status, void * data )
 {
@@ -60,25 +55,7 @@ static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFram
     SAMPLE * input = (SAMPLE *)inputBuffer;
     SAMPLE * output = (SAMPLE *)outputBuffer;
 
-    struct stat attrib;
-    stat(gd->pd.filename, &attrib);
     if(gd->please_recompile == 1) {
-        //int error = 0;
-        //gd->pd.fp = fopen(gd->pd.filename, "r");
-        //fprintf(stderr, "opening %s\n", gd->pd.filename);
-        //if(gd->pd.fp == NULL) {
-        //    fprintf(stderr, "uh oh!\n");
-        //}
-        //plumber_reinit(&gd->pd);
-        ///* Add our ftable before reparsing */
-        //plumber_ftmap_delete(&gd->pd, 0);
-        //plumber_ftmap_add(&gd->pd, "aur", gd->arg_tbl);
-        //plumber_ftmap_delete(&gd->pd, 1);
-        //error = plumber_reparse(&gd->pd);
-        //plumber_swap(&gd->pd, error);
-        //fclose(gd->pd.fp);
-        //gd->pd.fp = NULL;
-        //gd->please_recompile = 0;
         auria_reload(gd);
     }
 
@@ -159,32 +136,9 @@ static void reshapeFunc( GLsizei w, GLsizei h )
 
 static void mouseFunc( int button, int state, int x, int y )
 {
-    GLfloat depth = 0;
-    GLdouble fX, fY, fZ;
-    GLdouble  model[16], proj[16];
-    GLint view[4];
-    float rad, theta;
-    if( button == GLUT_LEFT_BUTTON ) {
-        /* when left mouse button is down */
-        if( state == GLUT_DOWN ) {
-            //g_data.state = (g_data.state == 1) ? 0 : 1 ;
-            auria_toggle_pitch(&g_data);
-        } else {
-        }
-    }
-    else if ( button == GLUT_RIGHT_BUTTON )
-    {
-        /* when right mouse button down */
-        if( state == GLUT_DOWN ) {
-            g_data.state_Y = (g_data.state_Y == 1) ? 0 : 1 ;
-        } else {
-        }
-    }
-    else {
-    }
-
     glutPostRedisplay( );
 }
+
 static void passiveMotionFunc(int x, int y)
 {
     if(g_data.mode == AURIA_FREEZE) {
@@ -226,7 +180,7 @@ static void initGfx()
     glutKeyboardFunc( keyboardFunc );
     /* set the mouse function - called on mouse stuff */
     glutMouseFunc( mouseFunc );
-    glutPassiveMotionFunc(passiveMotionFunc); 
+    //glutPassiveMotionFunc(passiveMotionFunc); 
 
     /* set clear color */
     glClearColor( 1, 1, 1, 1 );
@@ -290,7 +244,6 @@ int main_loop(int argc, char **argv)
     
    
     try {
-        //audio.openStream( &oParams, &iParams, MY_FORMAT, MY_SRATE, &bufferFrames, &callme, &g_data, &options );
         audio.openStream( &oParams, &iParams, MY_FORMAT, MY_SRATE, &bufferFrames, &callme, &g_data, &options );
     }
     catch( RtError& e )

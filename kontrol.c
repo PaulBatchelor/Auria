@@ -42,13 +42,10 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
     if(type == 1) {
         switch(ctl) {
             case BUT_A: 
-                printf("but_a %d\n", val); 
                 if(val == 1) auria_switch(ad);
                 break;
             case BUT_B: 
-                printf("but_b %d\n", val); 
-                ad->please_tick_red = 1;
-                //if(val == 1) auria_toggle_pitch(ad);
+                if(val == 1) ad->please_tick_red = 1;
                 break;
             case BUT_X:
                 if(val == 1) ad->please_tick_blue = 1;
@@ -57,11 +54,9 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 if(val == 1) ad->please_tick_yellow = 1;
                 break;
             case BUT_RB:
-                printf("but_rb %d\n", val); 
                 hold(ad, val);
                 break;
             case BUT_LB:
-                printf("but_lb %d\n", val); 
                 if(val == 1) {
                     ad->please_trig_lb = 1;
                 }
@@ -86,7 +81,6 @@ void auria_kontrol(int type, int ctl, int val, void *ud)
                 //}
                 break;
             case DPAD_H: 
-                printf("dpad_h %d\n", val);
                 if(val != 0) {
                     ad->rot_X = val;
                 } else {

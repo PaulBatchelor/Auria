@@ -232,6 +232,9 @@ int auria_compute_audio(auria_data *gd)
     sp_rms_compute(sp, gd->rms, &out, &rms);
     sp_port_compute(sp, gd->rms_smooth, &rms, &rms_smooth);
     gd->level = rms_smooth * 4;
+    if(isinf(gd->level)) {
+       gd->level = 0; 
+    }
 
     return 0;
 }

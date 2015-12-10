@@ -16,8 +16,8 @@
 1 0 0 'space' tabread
 
 dup 
-
+ 
 4 'aur' tget 0.9 *
-7 'aur' tget 0.5 * 0.01 +
+7 'aur' tget 0.5 * 0.1 +
 1 
 vdelay +
