@@ -11,9 +11,7 @@ Auria is built to explore the three ways musicians interface with computers:
 - Peripherals: The core interface of Auria is the F310 Logitech Gamepad, 
 a robust, low-cost controller. 
 
-- Code: At some point or another, a sound designer will have an sonic idea that just isn't
-possible with pre-made synthesizers. When the knob fails, this is a good time to turn to 
-some form of code. Auria is built on top of Sporth audio programming language, which allows the 
+- Code: Auria is built on top of the Sporth audio programming language, which allows the 
 user to create and tweak any sound they'd like. Sporth code can be recompiled on-the-fly, allowing 
 for seamless experimentation of ideas. 
 
