@@ -63,6 +63,9 @@ int auria_init_audio(auria_data *gd, char *filename)
     pd->nchan = 1;
 
     plumber_register(pd);
+    
+    gd->pd.f[0] = auria_toggle_duplexf;
+    gd->pd.f[1] = auria_reloadf;
    
     /* create argument table, push as table 'aur' from sporth */
     sp_ftbl_create(gd->sp, &gd->arg_tbl, AURIA_ARG_SIZE);

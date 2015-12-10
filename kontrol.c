@@ -9,7 +9,6 @@ static float joy_to_float(int val, float acc);
 
 static int hold(auria_data *ad, int val);
 
-
 void auria_kontrol(int type, int ctl, int val, void *ud)
 {
     //if(type == 1) {
@@ -199,5 +198,6 @@ int auria_reload(auria_data *ad)
     plumber_swap(&ad->pd, error);
     fclose(ad->pd.fp);
     ad->pd.fp = NULL;
+    ad->please_recompile = 0;
     return 0;
 }

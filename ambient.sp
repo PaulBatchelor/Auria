@@ -104,5 +104,5 @@ dup 0.97 8000 revsc drop
 
 16 'aur' tget  +
 
-# 17 'aur' tget 0 f
+17 'aur' tget 0 f
 18 'aur' tget 1 f

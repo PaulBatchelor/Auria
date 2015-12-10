@@ -63,28 +63,23 @@ static int callme( void * outputBuffer, void * inputBuffer, unsigned int numFram
     struct stat attrib;
     stat(gd->pd.filename, &attrib);
     if(gd->please_recompile == 1) {
-        if(g_init != 1) {
-            int error = 0;
-            gd->pd.fp = fopen(gd->pd.filename, "r");
-            fprintf(stderr, "opening %s\n", gd->pd.filename);
-            if(gd->pd.fp == NULL) {
-                fprintf(stderr, "uh oh!\n");
-            }
-            plumber_reinit(&gd->pd);
-            /* Add our ftable before reparsing */
-            plumber_ftmap_delete(&gd->pd, 0);
-            plumber_ftmap_add(&gd->pd, "aur", gd->arg_tbl);
-            plumber_ftmap_delete(&gd->pd, 1);
-            error = plumber_reparse(&gd->pd);
-            plumber_swap(&gd->pd, error);
-            fclose(gd->pd.fp);
-            gd->pd.fp = NULL;
-            //plumber_recompile(&gd->pd);
-        } else {
-            g_init = 0;
-        }
-        gd->lc.ltime = attrib.st_mtime;
-        gd->please_recompile = 0;
+        //int error = 0;
+        //gd->pd.fp = fopen(gd->pd.filename, "r");
+        //fprintf(stderr, "opening %s\n", gd->pd.filename);
+        //if(gd->pd.fp == NULL) {
+        //    fprintf(stderr, "uh oh!\n");
+        //}
+        //plumber_reinit(&gd->pd);
+        ///* Add our ftable before reparsing */
+        //plumber_ftmap_delete(&gd->pd, 0);
+        //plumber_ftmap_add(&gd->pd, "aur", gd->arg_tbl);
+        //plumber_ftmap_delete(&gd->pd, 1);
+        //error = plumber_reparse(&gd->pd);
+        //plumber_swap(&gd->pd, error);
+        //fclose(gd->pd.fp);
+        //gd->pd.fp = NULL;
+        //gd->please_recompile = 0;
+        auria_reload(gd);
     }
 
     for( int i = 0; i < numFrames * MY_CHANNELS; i+=2 )
